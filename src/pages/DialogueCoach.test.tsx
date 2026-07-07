@@ -17,6 +17,10 @@ describe("DialogueCoach", () => {
     expect(screen.getByText("Сохранено: 0")).toBeInTheDocument();
     expect(screen.getByText("Личная библиотека")).toBeInTheDocument();
     expect(screen.getByText("Коммуникационные приемы")).toBeInTheDocument();
+    expect(screen.queryByText("Trauma-informed темп")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Коммуникационные приемы" }));
+
     expect(screen.getByText("Trauma-informed темп")).toBeInTheDocument();
   });
 
@@ -27,6 +31,7 @@ describe("DialogueCoach", () => {
 
     expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain("Партнер сказал");
     expect(screen.getByText(/Расставание: сохранить себя/)).toBeInTheDocument();
+    expect(screen.getByText("Главный следующий шаг")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Фраза" })).toBeInTheDocument();
     expect(screen.getByText("Не обязательно отправлять")).toBeInTheDocument();
   });
@@ -40,6 +45,9 @@ describe("DialogueCoach", () => {
     expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain(
       "Ребенок резко ответил учительнице",
     );
+
+    fireEvent.click(screen.getByRole("button", { name: "Педагогический мост" }));
+
     expect(screen.getByText(/Доформулировать без давления/)).toBeInTheDocument();
     expect(screen.getByText(/Как можно было бы сказать это точнее/)).toBeInTheDocument();
   });
@@ -51,9 +59,15 @@ describe("DialogueCoach", () => {
     fireEvent.click(screen.getByRole("button", { name: "Сохранить" }));
 
     expect(screen.getByText("Сохранено: 1")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Найти сохраненный разбор")).toBeInTheDocument();
     const removedName = ["Р", "ома"].join("");
     expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).toContain("Партнер");
     expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).not.toContain(removedName);
+
+    fireEvent.click(screen.getByRole("button", { name: /Удалить разбор/ }));
+
+    expect(screen.getByText("Сохранено: 0")).toBeInTheDocument();
+    expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).toBe("[]");
   });
 
   it("saves personal library shortcuts locally", () => {
@@ -61,7 +75,7 @@ describe("DialogueCoach", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Пример" }));
     fireEvent.click(screen.getByRole("button", { name: "Триггер" }));
-    fireEvent.click(screen.getByRole("button", { name: "Фраза" }));
+    fireEvent.click(screen.getByRole("button", { name: "Сохранить фразу" }));
     fireEvent.click(screen.getByRole("button", { name: "Пауза" }));
 
     expect(screen.getByText("Записей: 3")).toBeInTheDocument();
@@ -69,6 +83,10 @@ describe("DialogueCoach", () => {
     expect(stored.triggers[0].value).toContain("меня не выбрали");
     expect(stored.safePhrases[0].value).toContain("Я пока");
     expect(stored.pausePhrases[0].value).toContain("вернусь");
+
+    fireEvent.click(screen.getByRole("button", { name: "Очистить библиотеку" }));
+
+    expect(screen.getByText("Записей: 0")).toBeInTheDocument();
   });
 
   it("cycles into male-perspective examples", () => {
