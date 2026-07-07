@@ -1,6 +1,7 @@
 import { type ReactNode, useMemo, useState } from "react";
 import {
   AlertTriangle,
+  BookmarkPlus,
   BookOpenCheck,
   Brain,
   CheckCircle2,
@@ -8,6 +9,8 @@ import {
   Copy,
   Eraser,
   HeartHandshake,
+  Library,
+  Lightbulb,
   MessageSquareText,
   FolderOpen,
   Save,
@@ -50,8 +53,30 @@ type SavedCase = {
   form: FormState;
   createdAt: string;
 };
+type LibraryBucket =
+  | "triggers"
+  | "automaticReactions"
+  | "alternativeReactions"
+  | "safePhrases"
+  | "pausePhrases";
+type LibraryItem = {
+  id: string;
+  label: string;
+  value: string;
+  createdAt: string;
+};
+type PersonalLibrary = Record<LibraryBucket, LibraryItem[]>;
+type CommunicationTechnique = {
+  id: string;
+  title: string;
+  tag: string;
+  principle: string;
+  steps: string[];
+  example: string;
+};
 
 const STORAGE_KEY = "braintrainings-dialogue-coach-saved-cases";
+const LIBRARY_STORAGE_KEY = "braintrainings-dialogue-coach-personal-library";
 
 const contexts: Array<{ id: ContextId; label: string }> = [
   { id: "partner", label: "Партнер" },
@@ -60,12 +85,147 @@ const contexts: Array<{ id: ContextId; label: string }> = [
   { id: "work", label: "Работа" },
 ];
 
+const libraryBucketConfig: Record<LibraryBucket, { label: string; field: keyof FormState; placeholder: string }> = {
+  triggers: {
+    label: "Триггеры",
+    field: "situation",
+    placeholder: "Вставить триггер",
+  },
+  automaticReactions: {
+    label: "Авто-реакции",
+    field: "draft",
+    placeholder: "Вставить авто-реакцию",
+  },
+  alternativeReactions: {
+    label: "Альтернативы",
+    field: "draft",
+    placeholder: "Вставить альтернативу",
+  },
+  safePhrases: {
+    label: "Опорные фразы",
+    field: "draft",
+    placeholder: "Вставить фразу",
+  },
+  pausePhrases: {
+    label: "Паузы",
+    field: "draft",
+    placeholder: "Вставить паузу",
+  },
+};
+
+const emptyPersonalLibrary: PersonalLibrary = {
+  triggers: [],
+  automaticReactions: [],
+  alternativeReactions: [],
+  safePhrases: [],
+  pausePhrases: [],
+};
+
 const emptyForm: FormState = {
   situation: "",
   draft: "",
   fear: "",
   want: "",
 };
+
+const pausePhraseByContext: Record<ContextId, string> = {
+  partner:
+    "Я сейчас не готов(а) отвечать из первой волны. Я не ухожу из контакта, вернусь к разговору завтра после 12:00.",
+  family:
+    "Мне нужна пауза, чтобы не говорить резко. Я вернусь к этому разговору вечером и скажу спокойнее.",
+  friend:
+    "Мне важно не обесценить нашу связь резким ответом. Я возьму паузу и вернусь к разговору завтра.",
+  work:
+    "Мне нужно проверить детали и не отвечать на эмоциях. Вернусь с конкретным предложением по срокам сегодня до конца дня.",
+};
+
+const communicationTechniques: CommunicationTechnique[] = [
+  {
+    id: "cbt-diary",
+    title: "КПТ-дневник реакции",
+    tag: "мысль не команда",
+    principle:
+      "Автоматическая мысль фиксируется как гипотеза, а не как приказ. Между импульсом и ответом появляется место для выбора.",
+    steps: [
+      "Факт: что реально произошло.",
+      "Автоматическая мысль: какой смысл мозг достроил.",
+      "Импульс: что хочется сделать сразу.",
+      "Альтернатива: какая мысль и реакция точнее и бережнее.",
+    ],
+    example:
+      "Не только «меня игнорируют», а «я не знаю мотив молчания; я могу попросить срок ответа и не писать второе сообщение из паники».",
+  },
+  {
+    id: "validation-boundary",
+    title: "Валидация + граница",
+    tag: "тепло без сдачи позиции",
+    principle:
+      "Сначала признается понятная часть поведения другого, затем спокойно обозначается условие, без которого связь становится небезопасной.",
+    steps: [
+      "Признать: почему человеку могло быть сложно.",
+      "Назвать влияние: что это делает с контактом.",
+      "Попросить формат: как можно иначе в следующий раз.",
+    ],
+    example:
+      "Я понимаю, что тебе легче закрыться. Мне подходит пауза, если у нее есть берег: напиши, когда вернешься к разговору.",
+  },
+  {
+    id: "pause-bridge",
+    title: "Пауза с мостом обратно",
+    tag: "не исчезать",
+    principle:
+      "Пауза регулирует нервную систему, а срок возвращения защищает связь от тревожного провала.",
+    steps: [
+      "Назвать паузу без наказания.",
+      "Сказать, что контакт не разрывается.",
+      "Дать срок или следующий конкретный шаг.",
+    ],
+    example:
+      "Я перегружен(а) и не хочу ранить. Я вернусь к этому через 2 дня и тогда отвечу по сути.",
+  },
+  {
+    id: "pedagogical-bridge",
+    title: "Педагогический мост",
+    tag: "показать другой способ",
+    principle:
+      "Когда прямой разговор о чувствах вызывает сопротивление, можно предложить человеку конкретный навык поведения вместо анализа личности.",
+    steps: [
+      "Убрать обвинение из входа.",
+      "Показать альтернативную фразу или действие.",
+      "Договориться о маленьком правиле на следующий раз.",
+    ],
+    example:
+      "Можно не отвечать сразу. Но вместо молчания напиши: «я не готов, вернусь через 3 дня». Тогда пауза не разрушает связь.",
+  },
+  {
+    id: "assumption-check",
+    title: "Проверка гипотезы",
+    tag: "мотив не факт",
+    principle:
+      "Интерпретация выносится наружу как предположение, чтобы разговор не начинался с суда.",
+    steps: [
+      "Отделить наблюдение от вывода.",
+      "Назвать свою гипотезу мягко.",
+      "Попросить поправить или уточнить.",
+    ],
+    example:
+      "Я додумываю, что ты отдаляешься, но могу ошибаться. Скажи, пожалуйста, что на самом деле происходит.",
+  },
+  {
+    id: "trauma-informed",
+    title: "Trauma-informed темп",
+    tag: "выбор и безопасность",
+    principle:
+      "При перегрузке, freeze, диссоциации или parts/system activation важнее ясность, выбор и малые шаги, чем немедленный глубокий разговор.",
+    steps: [
+      "Сначала ориентация: где я, какой сегодня день, что вокруг безопасно.",
+      "Только 10% темы: один факт, одно чувство, одна просьба.",
+      "Выбор формата: пауза, короткий ответ или возврат позже.",
+    ],
+    example:
+      "Сейчас не нужно решать все отношения. Можно выбрать один безопасный шаг и вернуться к разговору, когда тело снова здесь.",
+  },
+];
 
 const placeholdersByContext: Record<ContextId, FormState> = {
   partner: {
@@ -327,6 +487,12 @@ const anonymizeSavedCase = (saved: SavedCase): SavedCase => ({
   form: anonymizeForm(saved.form || emptyForm),
 });
 
+const anonymizeLibraryItem = (item: LibraryItem): LibraryItem => ({
+  ...item,
+  label: anonymizeText(item.label || ""),
+  value: anonymizeText(item.value || ""),
+});
+
 const readSavedCases = (): SavedCase[] => {
   if (typeof window === "undefined") return [];
 
@@ -348,11 +514,56 @@ const writeSavedCases = (cases: SavedCase[]) => {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cases));
 };
 
+const readPersonalLibrary = (): PersonalLibrary => {
+  if (typeof window === "undefined") return emptyPersonalLibrary;
+
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(LIBRARY_STORAGE_KEY) || "{}") as Partial<
+      Record<LibraryBucket, LibraryItem[]>
+    >;
+    const sanitized = (Object.keys(emptyPersonalLibrary) as LibraryBucket[]).reduce<PersonalLibrary>(
+      (acc, bucket) => {
+        const rawItems = Array.isArray(parsed[bucket]) ? parsed[bucket] : [];
+        acc[bucket] = rawItems
+          .slice(0, 10)
+          .map((item) =>
+            anonymizeLibraryItem({
+              id: String(item.id || `${bucket}-${Date.now()}`),
+              label: String(item.label || item.value || "Запись"),
+              value: String(item.value || item.label || ""),
+              createdAt: String(item.createdAt || new Date().toISOString()),
+            }),
+          )
+          .filter((item) => item.value.trim().length > 0);
+        return acc;
+      },
+      { ...emptyPersonalLibrary },
+    );
+
+    if (JSON.stringify(parsed) !== JSON.stringify(sanitized)) {
+      window.localStorage.setItem(LIBRARY_STORAGE_KEY, JSON.stringify(sanitized));
+    }
+    return sanitized;
+  } catch {
+    return emptyPersonalLibrary;
+  }
+};
+
+const writePersonalLibrary = (library: PersonalLibrary) => {
+  window.localStorage.setItem(LIBRARY_STORAGE_KEY, JSON.stringify(library));
+};
+
 const appendText = (current: string, addition: string) => {
   if (!addition) return current;
   if (!current.trim()) return addition;
   if (current.includes(addition)) return current;
   return `${current.trim()}; ${addition}`;
+};
+
+const makeLibraryLabel = (value: string) => {
+  const cleanValue = anonymizeText(value).replace(/\s+/g, " ").trim();
+  const firstPart = cleanValue.split(/[.!?;]/)[0].trim();
+  return firstPart.slice(0, 64) || "Запись";
 };
 
 const makeSavedTitle = (context: ContextId, form: FormState) => {
@@ -366,6 +577,7 @@ const DialogueCoach = () => {
   const [context, setContext] = useState<ContextId>("partner");
   const [form, setForm] = useState<FormState>(emptyForm);
   const [savedCases, setSavedCases] = useState<SavedCase[]>(readSavedCases);
+  const [personalLibrary, setPersonalLibrary] = useState<PersonalLibrary>(readPersonalLibrary);
   const [exampleIndexes, setExampleIndexes] = useState<Record<ContextId, number>>({
     partner: 0,
     family: 0,
@@ -375,6 +587,7 @@ const DialogueCoach = () => {
   const [selectedTone, setSelectedTone] = useState<ToneId>("soft");
   const [copyLabel, setCopyLabel] = useState("Скопировать");
   const [saveLabel, setSaveLabel] = useState("Сохранить");
+  const [libraryNotice, setLibraryNotice] = useState("Личная библиотека");
   const [selectVersion, setSelectVersion] = useState(0);
 
   const analysis = useMemo(() => {
@@ -384,6 +597,10 @@ const DialogueCoach = () => {
   const activeTone = (analysis?.formulations[selectedTone] ? selectedTone : analysis?.defaultTone || "soft") as ToneId;
   const finalMessage = analysis?.formulations[activeTone] || "";
   const placeholders = placeholdersByContext[context];
+  const totalLibraryItems = Object.values(personalLibrary).reduce((sum, items) => sum + items.length, 0);
+
+  const getDiaryDetail = (title: string) =>
+    analysis?.cbtDiary.find(([itemTitle]) => itemTitle === title)?.[1] || "";
 
   const updateField = (field: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -392,6 +609,10 @@ const DialogueCoach = () => {
   const appendField = (field: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [field]: appendText(current[field], value) }));
     setSelectVersion((current) => current + 1);
+  };
+
+  const insertLibraryItem = (bucket: LibraryBucket, value: string) => {
+    appendField(libraryBucketConfig[bucket].field, value);
   };
 
   const insertExample = () => {
@@ -407,6 +628,27 @@ const DialogueCoach = () => {
     setSelectedTone("soft");
     setCopyLabel("Скопировать");
     setSaveLabel("Сохранить");
+  };
+
+  const saveToLibrary = (bucket: LibraryBucket, rawValue: string) => {
+    const value = anonymizeText(rawValue || "").replace(/\s+/g, " ").trim();
+    if (!value) return;
+
+    const item: LibraryItem = {
+      id: `${bucket}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      label: makeLibraryLabel(value),
+      value,
+      createdAt: new Date().toISOString(),
+    };
+    const nextBucket = [
+      item,
+      ...personalLibrary[bucket].filter((existing) => existing.value !== value),
+    ].slice(0, 10);
+    const nextLibrary = { ...personalLibrary, [bucket]: nextBucket };
+    setPersonalLibrary(nextLibrary);
+    writePersonalLibrary(nextLibrary);
+    setLibraryNotice(`${libraryBucketConfig[bucket].label}: сохранено`);
+    window.setTimeout(() => setLibraryNotice("Личная библиотека"), 1200);
   };
 
   const saveCurrentCase = () => {
@@ -589,6 +831,80 @@ const DialogueCoach = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="rounded-md border border-warning/25 bg-warning/10 p-3">
+                <div className="mb-2 flex items-center justify-between gap-3 text-xs font-medium text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Library className="h-3.5 w-3.5" />
+                    {libraryNotice}
+                  </span>
+                  <span>Записей: {totalLibraryItems}</span>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {(Object.keys(libraryBucketConfig) as LibraryBucket[]).map((bucket) => (
+                    <LibrarySelect
+                      key={bucket}
+                      resetKey={`library-${bucket}-${totalLibraryItems}-${selectVersion}`}
+                      label={libraryBucketConfig[bucket].label}
+                      placeholder={libraryBucketConfig[bucket].placeholder}
+                      items={personalLibrary[bucket]}
+                      onSelect={(value) => insertLibraryItem(bucket, value)}
+                    />
+                  ))}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => saveToLibrary("triggers", form.fear || form.situation)}
+                    disabled={!form.fear.trim() && !form.situation.trim()}
+                  >
+                    <BookmarkPlus className="h-3.5 w-3.5" />
+                    Триггер
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => saveToLibrary("automaticReactions", getDiaryDetail("Автоматическая реакция") || form.draft)}
+                    disabled={!analysis && !form.draft.trim()}
+                  >
+                    <BookmarkPlus className="h-3.5 w-3.5" />
+                    Авто
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      saveToLibrary("alternativeReactions", getDiaryDetail("Альтернативная реакция") || finalMessage)
+                    }
+                    disabled={!analysis && !finalMessage.trim()}
+                  >
+                    <BookmarkPlus className="h-3.5 w-3.5" />
+                    Альтернатива
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => saveToLibrary("safePhrases", finalMessage)}
+                    disabled={!finalMessage.trim()}
+                  >
+                    <BookmarkPlus className="h-3.5 w-3.5" />
+                    Фраза
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => saveToLibrary("pausePhrases", pausePhraseByContext[context])}
+                  >
+                    <BookmarkPlus className="h-3.5 w-3.5" />
+                    Пауза
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -631,28 +947,31 @@ const DialogueCoach = () => {
           )}
 
           {!analysis ? (
-            <div className="grid gap-4 lg:grid-cols-2">
-              <PlaceholderPanel
-                icon={Brain}
-                title="Разбор появится здесь"
-                text="Факт, интерпретация, эмоция, импульс и потребность соберутся после первого ввода."
-              />
-              <PlaceholderPanel
-                icon={BookOpenCheck}
-                title="КПТ-дневник"
-                text="Автоматическая мысль, первая реакция и более сбалансированная альтернатива."
-              />
-              <PlaceholderPanel
-                icon={Shield}
-                title="Регуляция"
-                text="При перегрузке, freeze или диссоциации сначала появится план стабилизации."
-              />
-              <PlaceholderPanel
-                icon={HeartHandshake}
-                title="Педагогический мост"
-                text="Для сопротивления, избегания и случаев, где человеку нужен пример другого поведения."
-              />
-            </div>
+            <>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <PlaceholderPanel
+                  icon={Brain}
+                  title="Разбор появится здесь"
+                  text="Факт, интерпретация, эмоция, импульс и потребность соберутся после первого ввода."
+                />
+                <PlaceholderPanel
+                  icon={BookOpenCheck}
+                  title="КПТ-дневник"
+                  text="Автоматическая мысль, первая реакция и более сбалансированная альтернатива."
+                />
+                <PlaceholderPanel
+                  icon={Shield}
+                  title="Регуляция"
+                  text="При перегрузке, freeze или диссоциации сначала появится план стабилизации."
+                />
+                <PlaceholderPanel
+                  icon={HeartHandshake}
+                  title="Педагогический мост"
+                  text="Для сопротивления, избегания и случаев, где человеку нужен пример другого поведения."
+                />
+              </div>
+              <TechniqueLibrary />
+            </>
           ) : (
             <>
               <Panel icon={Brain} title="Карта реакции">
@@ -762,6 +1081,8 @@ const DialogueCoach = () => {
                   </Button>
                 </div>
               </Panel>
+
+              <TechniqueLibrary />
             </>
           )}
         </section>
@@ -828,6 +1149,43 @@ const QuickSelect = ({
   </div>
 );
 
+const LibrarySelect = ({
+  resetKey,
+  label,
+  placeholder,
+  items,
+  onSelect,
+}: {
+  resetKey: string;
+  label: string;
+  placeholder: string;
+  items: LibraryItem[];
+  onSelect: (value: string) => void;
+}) => (
+  <div className="space-y-1.5">
+    <Label className="text-xs text-muted-foreground">{label}</Label>
+    <Select
+      key={resetKey}
+      disabled={!items.length}
+      onValueChange={(id) => {
+        const item = items.find((entry) => entry.id === id);
+        if (item) onSelect(item.value);
+      }}
+    >
+      <SelectTrigger className="h-9 bg-card text-xs">
+        <SelectValue placeholder={items.length ? placeholder : "Пока пусто"} />
+      </SelectTrigger>
+      <SelectContent>
+        {items.map((item) => (
+          <SelectItem key={item.id} value={item.id}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  </div>
+);
+
 const Panel = ({
   icon: Icon,
   title,
@@ -846,6 +1204,30 @@ const Panel = ({
     </CardHeader>
     <CardContent>{children}</CardContent>
   </Card>
+);
+
+const TechniqueLibrary = () => (
+  <Panel icon={Lightbulb} title="Коммуникационные приемы">
+    <div className="grid gap-3 lg:grid-cols-2">
+      {communicationTechniques.map((technique) => (
+        <div key={technique.id} className="rounded-md border border-border bg-background p-3">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <h3 className="text-sm font-semibold">{technique.title}</h3>
+            <Badge variant="outline">{technique.tag}</Badge>
+          </div>
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{technique.principle}</p>
+          <ul className="mt-3 space-y-1 text-xs leading-relaxed text-muted-foreground">
+            {technique.steps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ul>
+          <p className="mt-3 rounded-md bg-primary/5 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+            {technique.example}
+          </p>
+        </div>
+      ))}
+    </div>
+  </Panel>
 );
 
 const InfoBlock = ({ title, detail }: { title: string; detail: string }) => (

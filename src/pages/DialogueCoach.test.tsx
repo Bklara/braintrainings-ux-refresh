@@ -15,6 +15,9 @@ describe("DialogueCoach", () => {
     expect(screen.getByText("Разбор появится здесь")).toBeInTheDocument();
     expect(screen.getByText("Добавить страх")).toBeInTheDocument();
     expect(screen.getByText("Сохранено: 0")).toBeInTheDocument();
+    expect(screen.getByText("Личная библиотека")).toBeInTheDocument();
+    expect(screen.getByText("Коммуникационные приемы")).toBeInTheDocument();
+    expect(screen.getByText("Trauma-informed темп")).toBeInTheDocument();
   });
 
   it("loads the partner example and shows the breakup-safe coach state", () => {
@@ -24,7 +27,7 @@ describe("DialogueCoach", () => {
 
     expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain("Партнер сказал");
     expect(screen.getByText(/Расставание: сохранить себя/)).toBeInTheDocument();
-    expect(screen.getByText("Фраза")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Фраза" })).toBeInTheDocument();
     expect(screen.getByText("Не обязательно отправлять")).toBeInTheDocument();
   });
 
@@ -51,6 +54,21 @@ describe("DialogueCoach", () => {
     const removedName = ["Р", "ома"].join("");
     expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).toContain("Партнер");
     expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).not.toContain(removedName);
+  });
+
+  it("saves personal library shortcuts locally", () => {
+    render(<DialogueCoach />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Пример" }));
+    fireEvent.click(screen.getByRole("button", { name: "Триггер" }));
+    fireEvent.click(screen.getByRole("button", { name: "Фраза" }));
+    fireEvent.click(screen.getByRole("button", { name: "Пауза" }));
+
+    expect(screen.getByText("Записей: 3")).toBeInTheDocument();
+    const stored = JSON.parse(window.localStorage.getItem("braintrainings-dialogue-coach-personal-library") || "{}");
+    expect(stored.triggers[0].value).toContain("меня не выбрали");
+    expect(stored.safePhrases[0].value).toContain("Я пока");
+    expect(stored.pausePhrases[0].value).toContain("вернусь");
   });
 
   it("cycles into male-perspective examples", () => {
