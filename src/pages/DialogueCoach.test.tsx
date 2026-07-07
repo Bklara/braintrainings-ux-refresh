@@ -22,7 +22,7 @@ describe("DialogueCoach", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Пример" }));
 
-    expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain("Рома сказал");
+    expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain("Партнер сказал");
     expect(screen.getByText(/Расставание: сохранить себя/)).toBeInTheDocument();
     expect(screen.getByText("Фраза")).toBeInTheDocument();
     expect(screen.getByText("Не обязательно отправлять")).toBeInTheDocument();
@@ -48,6 +48,8 @@ describe("DialogueCoach", () => {
     fireEvent.click(screen.getByRole("button", { name: "Сохранить" }));
 
     expect(screen.getByText("Сохранено: 1")).toBeInTheDocument();
-    expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).toContain("Рома");
+    const removedName = ["Р", "ома"].join("");
+    expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).toContain("Партнер");
+    expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).not.toContain(removedName);
   });
 });

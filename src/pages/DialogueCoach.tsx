@@ -106,7 +106,7 @@ const examplesByContext: Record<ContextId, FormState[]> = {
   partner: [
     {
       situation:
-        "Рома сказал, что не готов продолжать отношения, и мы расстались. После этого он то выходит на связь тепло, то снова отдаляется. Мне больно, тревожно и хочется понять, была ли я ему важна.",
+        "Партнер сказал, что не готов продолжать отношения, и мы расстались. После этого он то выходит на связь тепло, то снова отдаляется. Мне больно, тревожно и хочется понять, была ли я ему важна.",
       draft: "Ты просто использовал меня и опять исчез. Если тебе все равно, так и скажи.",
       fear: "меня не выбрали и легко оставили",
       want: "ясность, уважение к моей боли и возможность не разрушать себя",
@@ -254,12 +254,34 @@ const neutralPatternText: Record<string, string> = {
 const hasContent = (form: FormState) =>
   Object.values(form).some((value) => value.trim().length > 0);
 
+const anonymizeText = (value: string) =>
+  value.replace(/(^|[^\p{L}])Ром(?:а|у|е|ой|ы)(?=$|[^\p{L}])/giu, "$1партнер");
+
+const anonymizeForm = (form: FormState): FormState => ({
+  situation: anonymizeText(form.situation || ""),
+  draft: anonymizeText(form.draft || ""),
+  fear: anonymizeText(form.fear || ""),
+  want: anonymizeText(form.want || ""),
+});
+
+const anonymizeSavedCase = (saved: SavedCase): SavedCase => ({
+  ...saved,
+  title: anonymizeText(saved.title || ""),
+  form: anonymizeForm(saved.form || emptyForm),
+});
+
 const readSavedCases = (): SavedCase[] => {
   if (typeof window === "undefined") return [];
 
   try {
     const parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "[]");
-    return Array.isArray(parsed) ? parsed.slice(0, 12) : [];
+    if (!Array.isArray(parsed)) return [];
+
+    const sanitized = parsed.slice(0, 12).map(anonymizeSavedCase);
+    if (JSON.stringify(parsed.slice(0, 12)) !== JSON.stringify(sanitized)) {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitized));
+    }
+    return sanitized;
   } catch {
     return [];
   }
@@ -335,9 +357,9 @@ const DialogueCoach = () => {
 
     const saved: SavedCase = {
       id: `${Date.now()}`,
-      title: makeSavedTitle(context, form),
+      title: anonymizeText(makeSavedTitle(context, form)),
       context,
-      form,
+      form: anonymizeForm(form),
       createdAt: new Date().toISOString(),
     };
     const nextCases = [saved, ...savedCases].slice(0, 12);
