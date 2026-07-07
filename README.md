@@ -1,6 +1,6 @@
-# BrainTrainings Dialogue Lab
+# BrainTrainings Dialogue Coach
 
-Lovable/Vite React project with the difficult-conversation coach integrated as the main screen.
+Lovable/Vite React project with a single difficult-conversation coach experience.
 
 ## Run
 
@@ -20,7 +20,6 @@ npm run build
 ## What is inside
 
 - `/` — Russian dialogue coach: reflection, CBT diary, regulation, pedagogical bridge, and message drafting.
-- `/overview`, `/audit`, `/roadmap`, `/ia`, `/hero`, `/segments`, `/demo`, `/prototype/*` — original Lovable UX review structure.
 - `src/lib/dialogueAnalyzer.ts` — local analyzer logic.
 - `data/` and `docs/` — training corpus, methodology, coach protocol, and behavior architecture.
 
