@@ -14,11 +14,11 @@ const diaryValue = (analysis: ReturnType<typeof analyzeDialogue>, title: string)
 };
 
 describe("dialogueAnalyzer", () => {
-  it("keeps the breakup/Roma case in reflection mode instead of pursuit", () => {
+  it("keeps the breakup case in reflection mode instead of pursuit", () => {
     const analysis = analyzeDialogue({
       context: "partner",
       situation:
-        "Рома сказал, что не готов продолжать отношения, и мы расстались. После этого он то выходит на связь тепло, то снова отдаляется. Мне больно, тревожно и хочется понять, была ли я ему важна.",
+        "Партнер сказал, что не готов продолжать отношения, и мы расстались. После этого он то выходит на связь тепло, то снова отдаляется. Мне больно, тревожно и хочется понять, была ли я ему важна.",
       draft: "Ты просто использовал меня и опять исчез. Если тебе все равно, так и скажи.",
       fear: "меня не выбрали и легко оставили",
       want: "ясность, уважение к моей боли и возможность не разрушать себя",
