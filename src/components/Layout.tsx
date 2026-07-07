@@ -9,10 +9,12 @@ import {
   Eye,
   Home,
   FileText,
+  MessageSquareText,
 } from "lucide-react";
 
 const nav = [
-  { to: "/", label: "Overview", icon: Home, end: true },
+  { to: "/", label: "Dialogue coach", icon: MessageSquareText, end: true },
+  { to: "/overview", label: "UX overview", icon: Home },
   { to: "/audit", label: "UX audit", icon: ClipboardList },
   { to: "/roadmap", label: "Action roadmap", icon: FileText },
   { to: "/ia", label: "Information architecture", icon: Network },
@@ -29,7 +31,7 @@ export const Layout = () => {
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex">
         <div className="border-b border-sidebar-border px-5 py-5">
           <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sidebar-foreground/60">
-            UX Review
+            Dialogue Lab
           </div>
           <div className="mt-1 text-base font-semibold text-sidebar-foreground">
             BrainTrainings Academy
@@ -56,13 +58,13 @@ export const Layout = () => {
           ))}
         </nav>
         <div className="border-t border-sidebar-border px-5 py-4 text-[11px] leading-relaxed text-sidebar-foreground/60">
-          Educational worksheet tool. Not a medical device. No diagnosis, no medical advice.
+          Educational conversation tool. Not a medical device. No diagnosis, no medical advice.
         </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:hidden">
-          <div className="text-sm font-semibold">BT Academy — UX Review</div>
+          <div className="text-sm font-semibold">BT Academy — Dialogue Lab</div>
         </header>
         <main className="min-w-0 flex-1">
           <Outlet />

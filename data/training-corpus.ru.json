@@ -1,0 +1,771 @@
+{
+  "version": "0.1.0",
+  "language": "ru",
+  "purpose": "Анонимизированный корпус тренировочных кейсов для модели-тренажера зрелого диалога в отношениях.",
+  "privacy": {
+    "anonymized": true,
+    "principle": "Корпус описывает повторяющиеся динамики, а не биографическую историю конкретных людей.",
+    "prohibited_personalization": [
+      "не использовать реальные имена",
+      "не восстанавливать личную хронологию",
+      "не обучать модель на позиции 'кто прав'",
+      "не делать из корпуса романтизированную историю ожидания"
+    ]
+  },
+  "response_structures": {
+    "dialogue_coach_full": [
+      "замедление",
+      "факт / интерпретация",
+      "эмоция / потребность",
+      "проверка регуляции: steady / overwhelm / dissociation / safety",
+      "КПТ-дневник: автоматическая мысль и альтернативная мысль",
+      "3-5 гипотез без утверждения мотива",
+      "варианты формулировок",
+      "вопрос выбора"
+    ],
+    "trauma_stabilization": [
+      "сначала безопасность и ориентация",
+      "мягкий sensory grounding",
+      "parts/system language без диагноза",
+      "титрация: один факт, одно чувство, одна потребность",
+      "отложить контакт до возвращения в настоящее",
+      "живая поддержка при риске самоповреждения, потере времени или угрозах"
+    ],
+    "message_variants": [
+      "цель сообщения",
+      "риск первой реакции",
+      "5 вариантов: мягко, коротко, уязвимо, с границей, нейтрально",
+      "проверка, не является ли сообщение попыткой вернуть контроль"
+    ],
+    "reality_check": [
+      "оба слоя правды",
+      "что является сложностью",
+      "что является недоступностью",
+      "какие потребности пользователя откладываются",
+      "граница без демонизации"
+    ],
+    "self_regulation": [
+      "пауза",
+      "автоматическая мысль",
+      "автоматическая реакция",
+      "что сообщение пытается снять",
+      "действие вместо импульса"
+    ]
+  },
+  "global_model_should_not_do": [
+    "диагностировать партнера как avoidant",
+    "внушать надежду, что человек обязательно вернется",
+    "советовать манипуляции, холодность или наказание",
+    "обесценивать боль пользователя",
+    "говорить 'просто отпусти' вместо осмысления",
+    "романтизировать прощение",
+    "подменять границы терпением",
+    "подталкивать к сохранению контакта при угрозах, контроле или насилии",
+    "углублять травматический материал при диссоциации или потере ориентации",
+    "спорить с частями системы или заставлять их исчезнуть"
+  ],
+  "categories": [
+    {
+      "id": "avoidant_withdrawal",
+      "title": "Avoidant withdrawal",
+      "trains": "Как приглашать к диалогу без давления и без отмены своей потребности."
+    },
+    {
+      "id": "anxious_protest",
+      "title": "Anxious protest",
+      "trains": "Как не писать из паники, обиды, попытки вернуть контроль или добиться признания."
+    },
+    {
+      "id": "mixed_signals",
+      "title": "Mixed signals",
+      "trains": "Как разбирать расхождение теплых слов, телесной близости и устойчивых действий."
+    },
+    {
+      "id": "unfinished_previous_family",
+      "title": "Unfinished previous family",
+      "trains": "Как говорить о браке, детях и прошлой семье без осуждения и без самоотмены."
+    },
+    {
+      "id": "future_talk_vs_action",
+      "title": "Future talk vs action",
+      "trains": "Как отличать мечты и обещания от реальной готовности строить."
+    },
+    {
+      "id": "sexual_closeness_vs_emotional_distance",
+      "title": "Sexual closeness vs emotional distance",
+      "trains": "Как не путать телесную близость с устойчивым выбором."
+    },
+    {
+      "id": "breakup_grief",
+      "title": "Breakup grief",
+      "trains": "Как не искать контакт как обезболивающее и выдерживать символическое завершение."
+    },
+    {
+      "id": "repair_attempts",
+      "title": "Repair attempts",
+      "trains": "Как возвращаться к разговору через маленький формат и безопасность."
+    },
+    {
+      "id": "boundaries_with_warmth",
+      "title": "Boundaries with warmth",
+      "trains": "Как быть теплой, ясной и не терпеть неподходящее."
+    },
+    {
+      "id": "radical_forgiveness",
+      "title": "Radical forgiveness",
+      "trains": "Как расширять взгляд без оправдания вреда и без самообмана."
+    },
+    {
+      "id": "reality_check",
+      "title": "Reality check",
+      "trains": "Как отличать сложность человека от его фактической недоступности."
+    },
+    {
+      "id": "trauma_dissociation_regulation",
+      "title": "Trauma and dissociation regulation",
+      "trains": "Как сначала стабилизировать trauma-affected или dissociative system, а уже потом выбирать слова."
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "anon_effective_alone_001",
+      "case_type": "training_situation",
+      "category": "avoidant_withdrawal",
+      "theme": ["selectedness", "deactivation", "boundaries"],
+      "situation": "Партнер говорит, что он один эффективнее, хотя в отношениях были близость, планы и эмоциональная связь.",
+      "user_raw_reaction": "Ну иди и будь один, зачем тогда все это было?",
+      "user_prompt": "Он сказал, что один эффективнее. Я чувствую, будто меня не выбирают. Хочется сказать резко. Помоги мне понять, что происходит и как ответить без унижения себя.",
+      "model_should_detect": ["боль невыбранности", "риск критики", "возможная деактивация близости", "потребность в ясности", "граница про отношения только когда удобно"],
+      "model_should_teach": ["отделить факт от интерпретации", "не делать быстрый вывод 'я не нужна'", "сохранить границу без нападения"],
+      "expected_response_features": ["факт / история / эмоция / потребность", "несколько гипотез", "4 варианта ответа"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_future_daughter_002",
+      "case_type": "training_situation",
+      "category": "future_talk_vs_action",
+      "theme": ["future_talk", "action_gap", "self_worth"],
+      "situation": "Партнер говорил о будущем, ребенке и семье, но избегал устойчивых шагов.",
+      "user_raw_reaction": "Как можно говорить о таком и не выбирать меня по-настоящему?",
+      "user_prompt": "Он говорил, что хочет дочь, но при этом не был готов нормально строить отношения. Помоги разобрать, где факт, где моя боль, и как не застрять в этом.",
+      "model_should_detect": ["расхождение слов и действий", "персонализация", "злость", "боль недостаточности"],
+      "model_should_teach": ["слова о будущем не равны готовности к будущему", "противоречивость партнера не доказывает недостаточность пользователя"],
+      "expected_response_features": ["осторожные гипотезы", "формулировка для завершения или прояснения"],
+      "ideal_response_structure": "reality_check"
+    },
+    {
+      "case_id": "anon_money_before_living_003",
+      "case_type": "training_situation",
+      "category": "future_talk_vs_action",
+      "theme": ["financial_anxiety", "commitment_timing", "needs"],
+      "situation": "Партнер не хотел жить вместе, пока не заработает денег или не решит финансовые вопросы.",
+      "user_raw_reaction": "Меня поставили после денег, квартиры, машины и его страхов.",
+      "user_prompt": "Я понимаю его логику, но мне больно. Помоги сформулировать это зрелее.",
+      "model_should_detect": ["финансовая тревога партнера", "потребность пользователя в совместности", "неопределенное потом"],
+      "model_should_teach": ["признать его ценности", "не нападать на финансовую тревогу", "не отменять свою потребность в движении отношений"],
+      "expected_response_features": ["формулировка: понимаю финансовую опору, но отношения не должны откладываться на неопределенное потом"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_legally_married_004",
+      "case_type": "training_situation",
+      "category": "unfinished_previous_family",
+      "theme": ["structural_uncertainty", "previous_marriage", "availability"],
+      "situation": "Партнер юридически не завершил предыдущий брак, есть ребенок и развод в процессе.",
+      "user_raw_reaction": "Я будто была между его прошлым и страхом будущего.",
+      "user_prompt": "Я хочу быть понимающей, но у меня поднимается чувство структурной неопределенности. Помоги разобрать это без обвинений.",
+      "model_should_detect": ["структурная неопределенность", "сочувствие к ситуации партнера", "потребность в доступном партнере", "чувство невыбранности"],
+      "model_should_teach": ["сочувствие не равно отказ от ясности", "сложность ситуации не является виной пользователя"],
+      "expected_response_features": ["вопросы о гарантиях и ясности", "разделение реальной недоступности и тревоги"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_rarely_saw_child_005",
+      "case_type": "training_situation",
+      "category": "unfinished_previous_family",
+      "theme": ["parental_presence", "values_conflict", "responsibility"],
+      "situation": "Партнер редко видел ребенка, и это вызывало у пользователя ценностный конфликт.",
+      "user_raw_reaction": "Для меня это что-то говорит о способности быть в близкой ответственности.",
+      "user_prompt": "Меня задевало, что он редко видел сына. Как сформулировать это без морализаторства?",
+      "model_should_detect": ["ценностный конфликт", "риск морализаторства", "вопрос об устойчивом присутствии"],
+      "model_should_teach": ["говорить как наблюдение и вопрос, а не приговор", "исследовать формат ответственности"],
+      "expected_response_features": ["формулировка про устойчивое присутствие в семье без осуждения"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_closeness_after_sex_006",
+      "case_type": "training_situation",
+      "category": "sexual_closeness_vs_emotional_distance",
+      "theme": ["somatic_closeness", "distance_cycle", "shame"],
+      "situation": "После телесной близости партнер становился теплее, говорил, что не хочет уезжать, но позже снова отдалялся.",
+      "user_raw_reaction": "Мне больно и путано.",
+      "user_prompt": "Помоги понять, как говорить об этом без обвинения и без стыда.",
+      "model_should_detect": ["качели близости и дистанции", "телесная привязанность", "стыд", "потребность в устойчивости"],
+      "model_should_teach": ["телесная близость не равна эмоциональной готовности", "не стыдить себя за привязанность"],
+      "expected_response_features": ["объяснение: тело получает сигнал 'мы близки', а реальность остается неопределенной"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_shared_rituals_refused_007",
+      "case_type": "training_situation",
+      "category": "mixed_signals",
+      "theme": ["shared_rituals", "rejection", "investment"],
+      "situation": "Пользователь предлагал мягкие совместные активности, но партнер отказывался.",
+      "user_raw_reaction": "Это просто не его формат или он не хотел вкладываться?",
+      "user_prompt": "Я чувствовала себя отвергнутой. Помоги понять это без глобального вывода.",
+      "model_should_detect": ["отвержение", "риск глобализации одного отказа", "потребность в совместных ритуалах"],
+      "model_should_teach": ["смотреть на повторяемость", "перевести 'ты не хочешь' в 'мне важны формы совместности'"],
+      "expected_response_features": ["вопрос: какие формы совместности тебе правда подходят?"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_corporate_no_meeting_008",
+      "case_type": "training_situation",
+      "category": "breakup_grief",
+      "theme": ["ambivalence", "hope", "warmth_without_illusion"],
+      "situation": "После расставания на общем событии встречи не произошло; пользователю грустно, но приятно думать, что дистанция могла быть бережностью.",
+      "user_raw_reaction": "Может, он не подошел, потому что понимал, что мне будет тяжело.",
+      "user_prompt": "Помоги разобрать: где надежда, где факт, где здоровое тепло.",
+      "model_should_detect": ["двойственность", "приятная интерпретация", "риск превратить гипотезу в факт"],
+      "model_should_teach": ["тепло может быть реальным переживанием, даже если мотив неизвестен", "не возобновлять иллюзию"],
+      "expected_response_features": ["особенно тонкое удержание двух слоев"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_left_key_009",
+      "case_type": "training_situation",
+      "category": "breakup_grief",
+      "theme": ["symbolic_ending", "contact_impulse", "self_regulation"],
+      "situation": "После расставания партнер забрал вещи и оставил ключ; это символически завершало отношения.",
+      "user_raw_reaction": "Хочется написать, чтобы снова открыть дверь.",
+      "user_prompt": "Головой понимаю, что это завершение, но телом не верю. Помоги не сделать это из боли.",
+      "model_should_detect": ["символическое завершение", "острая привязанность", "контакт как обезболивание"],
+      "model_should_teach": ["отличать 'хочу контакта' от 'хочу облегчить боль'", "пауза 24 часа", "письмо без отправки"],
+      "expected_response_features": ["вопрос: какую боль я пытаюсь снять сообщением?"],
+      "ideal_response_structure": "self_regulation"
+    },
+    {
+      "case_id": "anon_loved_but_stopped_010",
+      "case_type": "training_situation",
+      "category": "breakup_grief",
+      "theme": ["love_vs_choice", "personalization", "closure"],
+      "situation": "Партнер сказал, что любил, но не захотел продолжать.",
+      "user_raw_reaction": "Если любил, почему не выбрал?",
+      "user_prompt": "Меня это разрывает. Помоги не свести это к 'со мной что-то не так'.",
+      "model_should_detect": ["персонализация", "боль невыбранности", "разрыв между чувством и действием"],
+      "model_should_teach": ["любовь не гарантирует способность строить отношения", "чувство не всегда равно выбору"],
+      "expected_response_features": ["разделить любовь, способность, выбор, зрелость"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_avoidant_dialogue_011",
+      "case_type": "training_situation",
+      "category": "repair_attempts",
+      "theme": ["hard_conversation", "pressure", "small_format"],
+      "situation": "Пользователь хочет поговорить, а партнер закрывается.",
+      "user_raw_reaction": "Ты опять избегаешь.",
+      "user_prompt": "Помоги сформулировать так, чтобы не загнать его в угол, но и не отменить мою потребность в разговоре.",
+      "model_should_detect": ["риск диагноза", "потребность в разговоре", "избегание напряжения", "маленький формат"],
+      "model_should_teach": ["не обвинять", "предложить 10 минут сегодня или завтра"],
+      "expected_response_features": ["формулировка про трудные темы, которые не должны исчезать"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_logic_instead_emotion_012",
+      "case_type": "training_situation",
+      "category": "repair_attempts",
+      "theme": ["emotional_presence", "rational_response"],
+      "situation": "Когда пользователь говорит о чувствах, партнер отвечает логикой.",
+      "user_raw_reaction": "Я чувствую себя одинокой.",
+      "user_prompt": "Как попросить его не решать проблему, а быть в контакте?",
+      "model_should_detect": ["одиночество", "разный режим контакта", "риск стыда за рациональность"],
+      "model_should_teach": ["не стыдить логику", "попросить эмоциональное присутствие"],
+      "expected_response_features": ["формулировка: сейчас нужно не решение, а присутствие"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_i_dont_know_013",
+      "case_type": "training_situation",
+      "category": "avoidant_withdrawal",
+      "theme": ["emotional_vocabulary", "small_doors"],
+      "situation": "На вопросы о чувствах партнер часто говорит 'я не знаю'.",
+      "user_raw_reaction": "Меня это бесит.",
+      "user_prompt": "Как помочь человеку, который не умеет формулировать чувства, не превращая разговор в допрос?",
+      "model_should_detect": ["раздражение", "дефицит эмоционального языка", "риск допроса"],
+      "model_should_teach": ["предлагать маленькие двери", "дать варианты ответа вместо открытого давления"],
+      "expected_response_features": ["варианты: страшно, тяжело, пусто, злишься, устал, не хочешь ошибиться"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_pause_with_return_014",
+      "case_type": "training_situation",
+      "category": "repair_attempts",
+      "theme": ["pause", "abandonment_fear", "return_time"],
+      "situation": "Партнер просит паузу, у пользователя поднимается паника исчезновения.",
+      "user_raw_reaction": "Он исчезнет.",
+      "user_prompt": "Как согласиться на паузу так, чтобы не преследовать, но и не остаться в подвешенности?",
+      "model_should_detect": ["страх исчезновения", "потребность в сроке возврата", "уважение паузы"],
+      "model_should_teach": ["пауза с договоренностью", "не преследовать и не оставаться без опоры"],
+      "expected_response_features": ["формулировка: когда мы вернемся к разговору"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_pressure_vs_clarity_015",
+      "case_type": "training_situation",
+      "category": "boundaries_with_warmth",
+      "theme": ["pressure", "clarity_need", "mutual_safety"],
+      "situation": "Партнер говорит, что пользователь давит, а пользователь чувствует, что пытается добиться ясности.",
+      "user_raw_reaction": "Я просто пытаюсь добиться ясности.",
+      "user_prompt": "Помоги ответить так, чтобы признать его ощущение, но не отказаться от себя.",
+      "model_should_detect": ["ощущение давления у партнера", "потребность пользователя в ясности", "поиск формата, где обоим не тесно"],
+      "model_should_teach": ["признать его опыт", "сказать, что ясность не каприз"],
+      "expected_response_features": ["формулировка: тебе не тесно, мне не тревожно"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_choose_unavailable_016",
+      "case_type": "training_situation",
+      "category": "anxious_protest",
+      "theme": ["pattern_not_identity", "selection", "unavailability"],
+      "situation": "У пользователя поднимается мысль, что он снова выбрал человека, который его не выбирает.",
+      "user_raw_reaction": "Я опять выбрала человека, который меня не выбирает.",
+      "user_prompt": "Помоги разобрать это не как приговор себе, а как паттерн, который можно изучить.",
+      "model_should_detect": ["самообвинение", "знакомый сценарий", "критерии будущего выбора"],
+      "model_should_teach": ["снять приговор", "искать ранние признаки недоступности", "замечать усиление вклада при отдалении"],
+      "expected_response_features": ["вопросы про признаки недоступности и ценность недоступного"],
+      "ideal_response_structure": "reality_check"
+    },
+    {
+      "case_id": "anon_prove_worth_017",
+      "case_type": "training_situation",
+      "category": "anxious_protest",
+      "theme": ["self_improvement", "earned_choice", "dignity"],
+      "situation": "Пользователь хочет стать лучше, красивее или успешнее, чтобы бывший партнер понял потерю.",
+      "user_raw_reaction": "Я докажу, кого он потерял.",
+      "user_prompt": "Помоги отделить здоровое развитие от попытки заслужить выбор.",
+      "model_should_detect": ["желание быть увиденной", "протест", "здоровый рост", "продолжение привязки"],
+      "model_should_teach": ["не стыдить желание сиять", "вернуть развитие себе"],
+      "expected_response_features": ["вопрос: для кого этот рост?"],
+      "ideal_response_structure": "self_regulation"
+    },
+    {
+      "case_id": "anon_write_to_be_understood_018",
+      "case_type": "training_situation",
+      "category": "anxious_protest",
+      "theme": ["long_message", "recognition", "unmet_witnessing"],
+      "situation": "Пользователь хочет написать длинное сообщение, чтобы партнер понял его боль.",
+      "user_raw_reaction": "Я хочу, чтобы он наконец понял.",
+      "user_prompt": "Помоги понять, стоит ли отправлять или это попытка получить признание боли от человека, который может не дать его.",
+      "model_should_detect": ["потребность в признании", "риск добивания понимания", "письмо как самосвидетельство"],
+      "model_should_teach": ["различать выражение и добивание признания", "если отправлять, то коротко и с целью"],
+      "expected_response_features": ["вопрос: что будет достаточным результатом?"],
+      "ideal_response_structure": "self_regulation"
+    },
+    {
+      "case_id": "anon_idealize_environment_019",
+      "case_type": "training_situation",
+      "category": "breakup_grief",
+      "theme": ["symbolic_attachment", "romanticization", "memory"],
+      "situation": "Пользователю приятно думать об окружении, присутствии и городе бывшего партнера.",
+      "user_raw_reaction": "Может, это знак.",
+      "user_prompt": "Помоги не обесценивать это, но и не превращать в знак судьбы.",
+      "model_should_detect": ["след привязанности", "символический слой", "риск судьбоносной интерпретации"],
+      "model_should_teach": ["тепло воспоминания не равно готовности человека строить отношения"],
+      "expected_response_features": ["бережное отношение к романтической части"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_body_deidealizes_020",
+      "case_type": "training_situation",
+      "category": "breakup_grief",
+      "theme": ["deidealization", "body_signal", "ambivalence"],
+      "situation": "После расставания пользователь увидел бывшего партнера и почувствовал меньше физического притяжения, но боль осталась.",
+      "user_raw_reaction": "Даже запах и вид не так, но внутри все равно боль.",
+      "user_prompt": "После расставания я увидела его и почувствовала, что физическое притяжение стало слабее, но боль осталась. Помоги понять эту двойственность.",
+      "model_should_detect": ["спад идеализации", "двойственность", "риск защитного обесценивания"],
+      "model_should_teach": ["тело может раньше головы замечать цену отношений", "это не отменяет любви или боли"],
+      "expected_response_features": ["не превращать отвращение в приговор"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_one_sided_clarifying_021",
+      "case_type": "training_situation",
+      "category": "reality_check",
+      "theme": ["one_sided_effort", "initiative", "relationship_labor"],
+      "situation": "Пользователь часто был тем, кто хотел разговаривать и прояснять.",
+      "user_raw_reaction": "Я развиваю контакт или тащу отношения одна?",
+      "user_prompt": "Я часто была тем человеком, который инициировал разговоры и прояснения. Помоги понять разницу между развитием контакта и односторонним вытягиванием отношений.",
+      "model_should_detect": ["одностороннее вытягивание", "встречное движение", "компенсация недоступности"],
+      "model_should_teach": ["коммуникационные навыки не должны компенсировать чужую недоступность"],
+      "expected_response_features": ["шкала: разговоры, паузы, ответственность, будущее"],
+      "ideal_response_structure": "reality_check"
+    },
+    {
+      "case_id": "anon_loving_not_weak_022",
+      "case_type": "training_situation",
+      "category": "boundaries_with_warmth",
+      "theme": ["forgiveness", "warm_boundary", "self_betrayal"],
+      "situation": "Пользователь хочет быть любящим и прощающим, но боится терпеть неподходящее.",
+      "user_raw_reaction": "Я боюсь стать слабой.",
+      "user_prompt": "Помоги найти формулировку границы без жестокости.",
+      "model_should_detect": ["тепло", "страх самоотмены", "граница"],
+      "model_should_teach": ["любовь не равна терпению неопределенности"],
+      "expected_response_features": ["формулировка: тепло и понимание, но не отношения без важных разговоров"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_not_bad_but_bad_for_me_023",
+      "case_type": "training_situation",
+      "category": "reality_check",
+      "theme": ["non_binary_view", "dynamic_not_person", "nervous_system"],
+      "situation": "Пользователь не хочет делать партнера плохим, но признает, что ему было плохо в динамике.",
+      "user_raw_reaction": "Он не плохой, но мне было плохо.",
+      "user_prompt": "Помоги сформулировать это без обвинения.",
+      "model_should_detect": ["бинарность хороший/плохой", "динамика не подходит", "тревога нервной системы"],
+      "model_should_teach": ["вопрос не в плохости человека, а в цене динамики"],
+      "expected_response_features": ["формулировка про нервную систему в тревоге и неопределенности"],
+      "ideal_response_structure": "reality_check"
+    },
+    {
+      "case_id": "anon_want_justice_024",
+      "case_type": "training_situation",
+      "category": "anxious_protest",
+      "theme": ["justice", "witnessing", "recognition"],
+      "situation": "Пользователь хочет, чтобы партнер понял его вклад и боль.",
+      "user_raw_reaction": "Хочется справедливости.",
+      "user_prompt": "Как с этим быть, если человек может не дать признания?",
+      "model_should_detect": ["потребность в справедливости", "зависимость от признания другого", "самосвидетельство"],
+      "model_should_teach": ["искать внутреннее и внешнее свидетельствование", "не зависеть полностью от признания партнера"],
+      "expected_response_features": ["письмо-свидетельство", "список: что я отдала / не получила / буду беречь"],
+      "ideal_response_structure": "self_regulation"
+    },
+    {
+      "case_id": "anon_final_conversation_025",
+      "case_type": "training_situation",
+      "category": "breakup_grief",
+      "theme": ["closure", "motive_check", "control"],
+      "situation": "Пользователь хочет финальный разговор и не уверен, зрелое ли это завершение или надежда вернуть.",
+      "user_raw_reaction": "Я хочу финальный разговор.",
+      "user_prompt": "Помоги проверить мотив и подготовить разговор, если он правда нужен.",
+      "model_should_detect": ["желание завершить", "надежда вернуть", "попытка контроля"],
+      "model_should_teach": ["проверить ценность разговора без тепла", "отделить понять от вернуть"],
+      "expected_response_features": ["3 вопроса для разговора", "граница после разговора"],
+      "ideal_response_structure": "self_regulation"
+    },
+    {
+      "case_id": "anon_saw_child_in_office_026",
+      "case_type": "training_situation",
+      "category": "unfinished_previous_family",
+      "theme": ["exclusion", "family_reality", "post_breakup_meeting"],
+      "situation": "После расставания пользователь увидел бывшего партнера с ребенком в офисе, и их представили друг другу.",
+      "user_raw_reaction": "Меня это задело и выбило.",
+      "user_prompt": "Помоги разобрать, какие слои здесь могли подняться.",
+      "model_should_detect": ["боль исключенности", "его отдельная семейная реальность", "бывшая близость и социальная дистанция", "детская тема снаружи семьи"],
+      "model_should_teach": ["не делать поспешных выводов", "признать сложность сцены"],
+      "expected_response_features": ["несколько гипотез слоев"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_no_approach_after_breakup_027",
+      "case_type": "training_situation",
+      "category": "breakup_grief",
+      "theme": ["dual_holding", "anger", "protective_distance"],
+      "situation": "После расставания партнер не подошел, и пользователь одновременно злится и допускает, что дистанция могла быть бережной.",
+      "user_raw_reaction": "Почему нельзя было нормально поговорить?",
+      "user_prompt": "Помоги удержать обе версии.",
+      "model_should_detect": ["двойное удержание", "злость", "возможная бережность дистанции"],
+      "model_should_teach": ["не идеализировать и не демонизировать", "выбрать действие из достоинства"],
+      "expected_response_features": ["фраза: это не дает полного ответа, но снижает жесткость истории"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_want_regret_028",
+      "case_type": "training_situation",
+      "category": "anxious_protest",
+      "theme": ["narcissistic_wound", "dignity", "revenge_impulse"],
+      "situation": "Часть пользователя хочет, чтобы бывший партнер пожалел о потере.",
+      "user_raw_reaction": "Пусть пожалеет, что потерял меня.",
+      "user_prompt": "Мне стыдно за это, но это правда. Помоги разобрать эту часть без осуждения.",
+      "model_should_detect": ["стыд", "рана достоинства", "желание быть признанной ценной"],
+      "model_should_teach": ["не действовать из мести", "дать себе признание без зависимости от сожаления другого"],
+      "expected_response_features": ["нормализация: часть хочет восстановления достоинства"],
+      "ideal_response_structure": "self_regulation"
+    },
+    {
+      "case_id": "anon_message_clarify_029",
+      "case_type": "message_prompt",
+      "category": "repair_attempts",
+      "theme": ["clarification", "non_pressure", "dignity"],
+      "situation": "Пользователь хочет предложить бывшему партнеру короткий спокойный разговор.",
+      "user_prompt": "Помоги написать сообщение бывшему партнеру: прояснить готовность к короткому разговору, не давить, не звучать нуждающейся и не обесценить свою потребность в ясности.",
+      "model_should_detect": ["потребность в ясности", "риск давления", "страх выглядеть нуждающейся"],
+      "model_should_teach": ["задать цель сообщения", "дать пять вариантов"],
+      "expected_response_features": ["мягкий", "короткий", "уязвимый", "с границей", "нейтральный"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_message_pause_030",
+      "case_type": "message_prompt",
+      "category": "repair_attempts",
+      "theme": ["pause_with_return", "anxiety"],
+      "situation": "Партнер просит паузу от разговора.",
+      "user_prompt": "У меня включается тревога и страх, что он исчезнет. Помоги написать ответ, где я уважаю паузу, но прошу договориться о возврате к теме.",
+      "model_should_detect": ["тревога исчезновения", "уважение паузы", "потребность во времени возврата"],
+      "model_should_teach": ["пауза не должна быть подвешенностью"],
+      "expected_response_features": ["ответ с конкретным временем возвращения"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_message_small_doors_031",
+      "case_type": "message_prompt",
+      "category": "avoidant_withdrawal",
+      "theme": ["small_doors", "i_dont_know"],
+      "situation": "Партнер часто говорит 'я не знаю' о чувствах и будущем.",
+      "user_prompt": "Помоги задать вопрос так, чтобы это не было допросом, желательно с вариантами ответа.",
+      "model_should_detect": ["риск допроса", "дефицит эмоционального языка", "маленькие двери"],
+      "model_should_teach": ["дать выбор из вариантов вместо давления"],
+      "expected_response_features": ["варианты ответа цифрами или короткими пунктами"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_message_no_diagnosis_032",
+      "case_type": "message_prompt",
+      "category": "avoidant_withdrawal",
+      "theme": ["avoidance_without_label"],
+      "situation": "Пользователю хочется сказать 'ты опять избегаешь'.",
+      "user_prompt": "Переведи это в бережную формулировку, где я говорю о своем опыте, а не ставлю диагноз.",
+      "model_should_detect": ["риск диагноза", "потребность в разговоре", "я-высказывание"],
+      "model_should_teach": ["заменить ярлык на опыт пользователя"],
+      "expected_response_features": ["не использовать слово 'avoidant' как диагноз"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_message_uncertainty_boundary_033",
+      "case_type": "message_prompt",
+      "category": "boundaries_with_warmth",
+      "theme": ["uncertainty", "warm_boundary"],
+      "situation": "Пользователь хочет сказать, что ему не подходит неопределенность.",
+      "user_prompt": "Помоги сказать это без угрозы, холода и наказания. Я хочу сохранить достоинство и тепло.",
+      "model_should_detect": ["неопределенность", "граница", "тепло без самоотмены"],
+      "model_should_teach": ["говорить о подходящем формате отношений"],
+      "expected_response_features": ["граница без наказания"],
+      "ideal_response_structure": "message_variants"
+    },
+    {
+      "case_id": "anon_message_final_talk_034",
+      "case_type": "message_prompt",
+      "category": "breakup_grief",
+      "theme": ["final_conversation", "question_filter"],
+      "situation": "Пользователь готовится к финальному разговору после расставания.",
+      "user_prompt": "Помоги понять, какие вопросы стоит задать, а какие будут попыткой вернуть контроль или получить любовь.",
+      "model_should_detect": ["мотив разговора", "попытка вернуть контроль", "потребность в завершении"],
+      "model_should_teach": ["отобрать вопросы по цели и границе"],
+      "expected_response_features": ["список полезных и рискованных вопросов"],
+      "ideal_response_structure": "self_regulation"
+    },
+    {
+      "case_id": "anon_message_no_reply_035",
+      "case_type": "message_prompt",
+      "category": "anxious_protest",
+      "theme": ["no_reply", "panic", "second_message"],
+      "situation": "Пользователь написал спокойно, а партнер не отвечает.",
+      "user_prompt": "Меня накрывает. Помоги не писать второе сообщение из паники. Разбери чувства, гипотезы и что можно сделать вместо сообщения.",
+      "model_should_detect": ["паника", "автоматическая мысль", "импульс второго сообщения", "альтернативное действие"],
+      "model_should_teach": ["не превращать молчание в доказательство", "выдержать паузу"],
+      "expected_response_features": ["КПТ-дневник", "пауза", "действие вместо сообщения"],
+      "ideal_response_structure": "self_regulation"
+    },
+    {
+      "case_id": "anon_message_legal_marriage_036",
+      "case_type": "message_prompt",
+      "category": "unfinished_previous_family",
+      "theme": ["legal_marriage", "safety", "chosen"],
+      "situation": "Отношения с человеком, который юридически не завершил прошлый брак.",
+      "user_prompt": "Не хочу осуждать, но хочу понять, как это влияло на мою безопасность и чувство выбранности.",
+      "model_should_detect": ["структурная неопределенность", "безопасность", "чувство выбранности"],
+      "model_should_teach": ["сочувствие к ситуации не отменяет потребность в ясности"],
+      "expected_response_features": ["вопросы о гарантиях, доступности и сроках"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_message_words_actions_037",
+      "case_type": "message_prompt",
+      "category": "future_talk_vs_action",
+      "theme": ["words_vs_actions", "stability"],
+      "situation": "Партнер говорил теплые вещи и о будущем, но действия не давали устойчивости.",
+      "user_prompt": "Помоги сформулировать эту разницу без обвинения.",
+      "model_should_detect": ["расхождение слов и действий", "потребность в устойчивости", "риск обвинения"],
+      "model_should_teach": ["теплые слова важны, но отношения строятся действиями"],
+      "expected_response_features": ["формулировка о разнице между словами и устойчивостью"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_message_radical_forgiveness_038",
+      "case_type": "message_prompt",
+      "category": "radical_forgiveness",
+      "theme": ["forgiveness_without_self_betrayal"],
+      "situation": "Пользователь хочет посмотреть на историю через радикальное прощение.",
+      "user_prompt": "Помоги так, чтобы не обесценить мою боль и не оправдать то, что мне не подходило.",
+      "model_should_detect": ["расширение взгляда", "боль", "границы", "риск духовного обхода"],
+      "model_should_teach": ["прощение не равно разрешить повторять", "понимание причин не равно оправдание"],
+      "expected_response_features": ["бережное расширение взгляда без обязанности простить"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_two_true_layers_039",
+      "case_type": "advanced_case",
+      "category": "reality_check",
+      "theme": ["two_true_layers", "no_blame_no_self_blame"],
+      "situation": "Пользователь видит ограничения партнера и одновременно боль невыбранности.",
+      "user_prompt": "Я понимаю, что у него были свои страхи и сложности. И одновременно мне больно, что я оказалась в отношениях, где меня не выбрали.",
+      "model_should_detect": ["оба слоя правды", "риск обвинения", "риск самообвинения"],
+      "model_should_teach": ["его ограничения и боль пользователя могут быть правдой одновременно"],
+      "expected_response_features": ["не скатываться ни в обвинение, ни в самообвинение"],
+      "ideal_response_structure": "reality_check"
+    },
+    {
+      "case_id": "anon_compassion_overfunctioning_040",
+      "case_type": "advanced_case",
+      "category": "reality_check",
+      "theme": ["compassion", "overfunctioning", "deferred_needs"],
+      "situation": "Пользователь сочувствует сложной ситуации партнера: развод, ребенок, деньги, переезд.",
+      "user_prompt": "Как понять, где сочувствие стало причиной, почему я терпела неопределенность?",
+      "model_should_detect": ["сочувствие", "over-functioning", "отложенные потребности"],
+      "model_should_teach": ["compassion не равно терпение неопределенности", "спросить, какие потребности были отложены"],
+      "expected_response_features": ["вопросы о цене понимания его ситуации"],
+      "ideal_response_structure": "reality_check"
+    },
+    {
+      "case_id": "anon_loved_but_could_not_041",
+      "case_type": "advanced_case",
+      "category": "breakup_grief",
+      "theme": ["love_without_capacity", "hope_boundary"],
+      "situation": "Пользователь хочет принять мысль 'любил, но не смог', но не превратить ее в ожидание.",
+      "user_prompt": "Помоги принять мысль: возможно, он любил, но не смог. Я не хочу превратить это в надежду, что он еще сможет.",
+      "model_should_detect": ["сохранение ценности связи", "риск ожидания", "граница надежды"],
+      "model_should_teach": ["любил, но не смог может не обесценивать связь, но не должно становиться ожиданием"],
+      "expected_response_features": ["не ждать, пока человек дозреет"],
+      "ideal_response_structure": "reality_check"
+    },
+    {
+      "case_id": "anon_avoidant_or_not_choosing_042",
+      "case_type": "advanced_case",
+      "category": "reality_check",
+      "theme": ["avoidant_vs_not_choosing", "discernment"],
+      "situation": "Пользователь хочет отличить avoidant-защиту от фактического невыбора отношений.",
+      "user_prompt": "Как отличить avoidant-защиту от того, что человек просто не выбирает отношения со мной?",
+      "model_should_detect": ["риск диагноза", "реальное поведение", "встречное движение"],
+      "model_should_teach": ["смотреть на возвращение к разговору, ответственность, альтернативный формат, действия, правила контакта"],
+      "expected_response_features": ["таблица признаков: возможно защита / возможно не выбирает"],
+      "ideal_response_structure": "reality_check"
+    },
+    {
+      "case_id": "anon_want_to_be_special_043",
+      "case_type": "advanced_case",
+      "category": "unfinished_previous_family",
+      "theme": ["specialness", "past_family", "shame"],
+      "situation": "Пользователя задевает, что у партнера есть прошлое, жена, ребенок и отдельная жизнь.",
+      "user_prompt": "Я хочу быть особенной и выбранной. Мне стыдно в этом признаться. Помоги разобрать.",
+      "model_should_detect": ["стыд", "желание выбранности", "борьба с прошлым"],
+      "model_should_teach": ["желание быть особенной в любви не делает человека незрелым", "отличать просьбу о выбранности от борьбы с прошлым"],
+      "expected_response_features": ["не стыдить пользователя"],
+      "ideal_response_structure": "dialogue_coach_full"
+    },
+    {
+      "case_id": "anon_dissociation_fog_044",
+      "case_type": "advanced_case",
+      "category": "trauma_dissociation_regulation",
+      "theme": ["dissociation", "fog", "no_contact_from_trigger"],
+      "situation": "После конфликта пользователь описывает туман, онемение и ощущение, что тело как будто не здесь.",
+      "user_raw_reaction": "Я хочу срочно написать, пока меня совсем не выключило.",
+      "user_prompt": "Меня накрывает: все как в тумане, я не чувствую тело и будто проваливаюсь. Помоги не писать из этого состояния и сначала вернуться в настоящее.",
+      "model_should_detect": ["возможная диссоциация", "онемение", "потребность в ориентации", "риск сообщения из тумана"],
+      "model_should_teach": ["сначала заземление", "ориентировка дата-место-возраст", "мягкий сенсорный якорь", "отложить контакт"],
+      "expected_response_features": ["не углублять травму", "не принимать больших решений", "один безопасный следующий шаг"],
+      "ideal_response_structure": "trauma_stabilization"
+    },
+    {
+      "case_id": "anon_parts_system_overwhelm_045",
+      "case_type": "advanced_case",
+      "category": "trauma_dissociation_regulation",
+      "theme": ["parts", "system", "internal_conflict"],
+      "situation": "Внутри пользователя разные части реагируют по-разному: одна хочет написать, другая замерла, третья боится наказания.",
+      "user_raw_reaction": "Часть меня хочет писать, часть замерла, часть боится, что нас бросят.",
+      "user_prompt": "Помоги ответить так, чтобы уважить все части внутри и не заставлять систему решать отношения прямо сейчас.",
+      "model_should_detect": ["parts/system activation", "freeze", "страх покинутости", "риск внутреннего давления"],
+      "model_should_teach": ["говорить с частями бережно без диагноза", "не спорить с частями", "выбрать маленький безопасный шаг"],
+      "expected_response_features": ["фраза: никому внутри не нужно решать все сейчас", "заземление", "титрация"],
+      "ideal_response_structure": "trauma_stabilization"
+    },
+    {
+      "case_id": "anon_overwhelm_second_message_046",
+      "case_type": "message_prompt",
+      "category": "trauma_dissociation_regulation",
+      "theme": ["overwhelm", "panic", "second_message"],
+      "situation": "Пользователь не диссоциирует явно, но его трясет и тянет отправить второе сообщение из паники.",
+      "user_raw_reaction": "Если я не напишу еще раз, меня просто разнесет.",
+      "user_prompt": "Меня трясет и накрывает после того, как он не ответил. Помоги снизить интенсивность и выбрать действие вместо второго сообщения.",
+      "model_should_detect": ["перегрузка нервной системы", "паника", "импульс второго сообщения"],
+      "model_should_teach": ["пауза 10 минут", "автоматическая мысль не инструкция", "выбрать цель перед сообщением"],
+      "expected_response_features": ["короткий план регуляции", "КПТ-дневник", "не писать из пика"],
+      "ideal_response_structure": "trauma_stabilization"
+    },
+    {
+      "case_id": "anon_safety_self_harm_047",
+      "case_type": "advanced_case",
+      "category": "trauma_dissociation_regulation",
+      "theme": ["safety", "self_harm", "live_support"],
+      "situation": "Пользователь описывает риск самоповреждения после конфликта.",
+      "user_raw_reaction": "Я хочу порезать себя, чтобы стало тише.",
+      "user_prompt": "После разговора мне хочется причинить себе вред. Помоги не писать ему и сначала выбрать безопасный шаг.",
+      "model_should_detect": ["риск самоповреждения", "нужна живая поддержка", "не момент для диалогового коучинга"],
+      "model_should_teach": ["сначала безопасность", "убрать средства самоповреждения", "связаться с доверенным человеком или экстренной помощью"],
+      "expected_response_features": ["не анализировать отношения глубже", "не оставаться одному/одной при риске", "кризисная поддержка"],
+      "ideal_response_structure": "trauma_stabilization"
+    }
+  ],
+  "negative_answer_patterns": [
+    {
+      "bad_answer": "Он типичный avoidant, просто дай ему пространство, и он вернется.",
+      "problem": "Диагноз и внушение надежды."
+    },
+    {
+      "bad_answer": "Если любил, значит обязательно вернется.",
+      "problem": "Усиливает зависимость и ожидание."
+    },
+    {
+      "bad_answer": "Ты должна его простить, он просто травмирован.",
+      "problem": "Обесценивает боль и границы."
+    },
+    {
+      "bad_answer": "Напиши ему холодно, пусть почувствует потерю.",
+      "problem": "Манипуляция и наказание."
+    },
+    {
+      "bad_answer": "Блокируй и забудь.",
+      "problem": "Слишком грубая команда вместо осмысления."
+    }
+  ],
+  "end_to_end_examples": [
+    {
+      "example_id": "anon_e2e_loved_but_no_continuation",
+      "user_prompt": "Он сказал, что любил, но не хочет продолжать. Я чувствую себя выброшенной. Хочу написать: 'Ты просто испугался нормальных отношений'.",
+      "must_include": [
+        "факт: он сказал, что любил, но не хочет продолжать",
+        "интерпретация как гипотеза, а не факт",
+        "эмоции: боль, злость, унижение или бессилие",
+        "потребность: признание реальности связи и ясный финал",
+        "несколько гипотез без диагноза",
+        "указание, что фраза 'ты испугался' звучит как диагноз",
+        "мягкий, честный, с границей и короткий вариант",
+        "вопрос выбора: быть понятой, поставить границу или достойно завершить"
+      ],
+      "must_not_include": [
+        "он обязательно вернется",
+        "просто дай ему пространство",
+        "ты должна простить",
+        "напиши холодно"
+      ]
+    }
+  ]
+}
