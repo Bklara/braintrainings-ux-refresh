@@ -11,16 +11,26 @@ import {
   HeartHandshake,
   Library,
   Lightbulb,
+  ListChecks,
   MessageSquareText,
   FolderOpen,
   Save,
+  Search,
   Shield,
   Sparkles,
+  Trash2,
   type LucideIcon,
 } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -74,6 +84,7 @@ type CommunicationTechnique = {
   steps: string[];
   example: string;
 };
+type DialogueAnalysis = ReturnType<typeof analyzeDialogue>;
 
 const STORAGE_KEY = "braintrainings-dialogue-coach-saved-cases";
 const LIBRARY_STORAGE_KEY = "braintrainings-dialogue-coach-personal-library";
@@ -573,11 +584,21 @@ const makeSavedTitle = (context: ContextId, form: FormState) => {
   return `${contextLabel}: ${firstPart.slice(0, 58) || "без названия"}`;
 };
 
+const getContextLabel = (context: ContextId) =>
+  contexts.find((item) => item.id === context)?.label || "Кейс";
+
+const formatSavedDate = (createdAt: string) => {
+  const date = new Date(createdAt);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("ru-RU", { day: "2-digit", month: "short" });
+};
+
 const DialogueCoach = () => {
   const [context, setContext] = useState<ContextId>("partner");
   const [form, setForm] = useState<FormState>(emptyForm);
   const [savedCases, setSavedCases] = useState<SavedCase[]>(readSavedCases);
   const [personalLibrary, setPersonalLibrary] = useState<PersonalLibrary>(readPersonalLibrary);
+  const [savedSearch, setSavedSearch] = useState("");
   const [exampleIndexes, setExampleIndexes] = useState<Record<ContextId, number>>({
     partner: 0,
     family: 0,
@@ -598,6 +619,25 @@ const DialogueCoach = () => {
   const finalMessage = analysis?.formulations[activeTone] || "";
   const placeholders = placeholdersByContext[context];
   const totalLibraryItems = Object.values(personalLibrary).reduce((sum, items) => sum + items.length, 0);
+  const filteredSavedCases = useMemo(() => {
+    const query = savedSearch.trim().toLowerCase();
+    if (!query) return savedCases;
+
+    return savedCases.filter((item) => {
+      const searchable = [
+        item.title,
+        getContextLabel(item.context),
+        item.form.situation,
+        item.form.draft,
+        item.form.fear,
+        item.form.want,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return searchable.includes(query);
+    });
+  }, [savedCases, savedSearch]);
 
   const getDiaryDetail = (title: string) =>
     analysis?.cbtDiary.find(([itemTitle]) => itemTitle === title)?.[1] || "";
@@ -662,10 +702,14 @@ const DialogueCoach = () => {
       createdAt: new Date().toISOString(),
     };
     const nextCases = [saved, ...savedCases].slice(0, 12);
-    setSavedCases(nextCases);
-    writeSavedCases(nextCases);
+    updateSavedCases(nextCases);
     setSaveLabel("Сохранено");
     window.setTimeout(() => setSaveLabel("Сохранить"), 1200);
+  };
+
+  const updateSavedCases = (cases: SavedCase[]) => {
+    setSavedCases(cases);
+    writeSavedCases(cases);
   };
 
   const loadSavedCase = (id: string) => {
@@ -677,6 +721,23 @@ const DialogueCoach = () => {
     setSelectedTone("soft");
     setCopyLabel("Скопировать");
     setSelectVersion((current) => current + 1);
+  };
+
+  const deleteSavedCase = (id: string) => {
+    updateSavedCases(savedCases.filter((item) => item.id !== id));
+  };
+
+  const clearSavedCases = () => {
+    updateSavedCases([]);
+    setSavedSearch("");
+  };
+
+  const clearPersonalLibrary = () => {
+    const emptyLibrary = { ...emptyPersonalLibrary };
+    setPersonalLibrary(emptyLibrary);
+    writePersonalLibrary(emptyLibrary);
+    setLibraryNotice("Библиотека очищена");
+    window.setTimeout(() => setLibraryNotice("Личная библиотека"), 1200);
   };
 
   const copyMessage = async () => {
@@ -812,24 +873,82 @@ const DialogueCoach = () => {
                     <FolderOpen className="h-3.5 w-3.5" />
                     Сохраненные разборы
                   </span>
-                  <span>Сохранено: {savedCases.length}</span>
+                  <div className="flex items-center gap-2">
+                    <span>Сохранено: {savedCases.length}</span>
+                    {savedCases.length > 0 && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 text-xs"
+                        onClick={clearSavedCases}
+                      >
+                        Очистить разборы
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                <Select
-                  key={`saved-${savedCases.length}-${selectVersion}`}
-                  disabled={!savedCases.length}
-                  onValueChange={loadSavedCase}
-                >
-                  <SelectTrigger className="bg-card">
-                    <SelectValue placeholder={savedCases.length ? "Открыть сохраненный" : "Пока ничего нет"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {savedCases.map((item) => (
-                      <SelectItem key={item.id} value={item.id}>
-                        {item.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {savedCases.length > 0 ? (
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Search className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        value={savedSearch}
+                        onChange={(event) => setSavedSearch(event.target.value)}
+                        placeholder="Найти сохраненный разбор"
+                        className="h-9 bg-card pl-8 text-xs"
+                      />
+                    </div>
+                    {filteredSavedCases.length > 0 ? (
+                      <div className="max-h-56 space-y-2 overflow-y-auto pr-1">
+                        {filteredSavedCases.map((item) => (
+                          <div key={item.id} className="rounded-md border border-border bg-card p-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <button
+                                type="button"
+                                onClick={() => loadSavedCase(item.id)}
+                                className="min-w-0 flex-1 text-left text-xs font-medium leading-relaxed text-foreground hover:text-primary"
+                              >
+                                {item.title}
+                              </button>
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="h-7 w-7 shrink-0"
+                                aria-label={`Удалить разбор ${item.title}`}
+                                onClick={() => deleteSavedCase(item.id)}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                              <Badge variant="outline">{getContextLabel(item.context)}</Badge>
+                              {formatSavedDate(item.createdAt) && <span>{formatSavedDate(item.createdAt)}</span>}
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="secondary"
+                                className="ml-auto h-7 px-2 text-xs"
+                                onClick={() => loadSavedCase(item.id)}
+                              >
+                                Открыть
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="rounded-md border border-dashed border-primary/20 bg-card p-3 text-xs leading-relaxed text-muted-foreground">
+                        Ничего не нашлось. Попробуйте другое слово из ситуации, страха или цели.
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="rounded-md border border-dashed border-primary/20 bg-card p-3 text-xs leading-relaxed text-muted-foreground">
+                    Пока ничего нет. Сохраните разбор, чтобы вернуться к нему позже.
+                  </p>
+                )}
               </div>
               <div className="rounded-md border border-warning/25 bg-warning/10 p-3">
                 <div className="mb-2 flex items-center justify-between gap-3 text-xs font-medium text-muted-foreground">
@@ -837,7 +956,20 @@ const DialogueCoach = () => {
                     <Library className="h-3.5 w-3.5" />
                     {libraryNotice}
                   </span>
-                  <span>Записей: {totalLibraryItems}</span>
+                  <div className="flex items-center gap-2">
+                    <span>Записей: {totalLibraryItems}</span>
+                    {totalLibraryItems > 0 && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 text-xs"
+                        onClick={clearPersonalLibrary}
+                      >
+                        Очистить библиотеку
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {(Object.keys(libraryBucketConfig) as LibraryBucket[]).map((bucket) => (
@@ -892,7 +1024,7 @@ const DialogueCoach = () => {
                     disabled={!finalMessage.trim()}
                   >
                     <BookmarkPlus className="h-3.5 w-3.5" />
-                    Фраза
+                    Сохранить фразу
                   </Button>
                   <Button
                     type="button"
@@ -908,30 +1040,7 @@ const DialogueCoach = () => {
             </CardContent>
           </Card>
 
-          {analysis ? (
-            <Card
-              className={cn(
-                "border-l-4",
-                analysis.coachState.sendReadiness.canCopy ? "border-l-success" : "border-l-warning",
-              )}
-            >
-              <CardContent className="space-y-3 p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <Badge variant={analysis.safety ? "destructive" : "secondary"}>
-                    {coachModuleLabels[analysis.coachState.module] || "Коуч"}
-                  </Badge>
-                  <Badge variant="outline">{analysis.coachState.sendReadiness.label}</Badge>
-                </div>
-                <h2 className="text-lg font-semibold">{analysis.coachState.title}</h2>
-                <p className="text-sm leading-relaxed text-muted-foreground">{analysis.coachState.nextStep}</p>
-                <p className="rounded-md bg-muted px-3 py-2 text-xs leading-relaxed text-muted-foreground">
-                  {analysis.coachState.focus}
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <EmptyHint />
-          )}
+          {!analysis && <EmptyHint />}
         </section>
 
         <section className="space-y-4">
@@ -974,115 +1083,121 @@ const DialogueCoach = () => {
             </>
           ) : (
             <>
-              <Panel icon={Brain} title="Карта реакции">
-                <div className="grid gap-3 md:grid-cols-2">
-                  {analysis.reflection.map(([title, detail]) => (
-                    <InfoBlock key={title} title={title} detail={detail} />
-                  ))}
-                </div>
-              </Panel>
+              <FocusPanel analysis={analysis} finalMessage={finalMessage} copyLabel={copyLabel} onCopy={copyMessage} />
 
-              <Panel icon={Shield} title={analysis.regulationPlan.title}>
-                <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
-                  {analysis.regulationPlan.principle}
-                </p>
-                <div className="grid gap-3 lg:grid-cols-3">
-                  {analysis.regulationPlan.steps.map(([title, detail]) => (
-                    <InfoBlock key={title} title={title} detail={detail} />
-                  ))}
-                  <div className="rounded-md border border-warning/35 bg-warning/10 p-3">
-                    <h3 className="text-sm font-semibold">Не делать</h3>
-                    <ul className="mt-2 space-y-1 text-xs leading-relaxed text-muted-foreground">
-                      {analysis.regulationPlan.avoid.map((item) => (
-                        <li key={item}>{item}</li>
+              <Accordion type="multiple" defaultValue={["phrase"]} className="space-y-3">
+                <AccordionPanel icon={Clipboard} title="Фраза" value="phrase">
+                  <Tabs value={activeTone} onValueChange={(value) => setSelectedTone(value as ToneId)}>
+                    <TabsList className="mb-3 flex h-auto flex-wrap justify-start">
+                      {Object.entries(analysis.toneLabels).map(([tone, label]) => (
+                        <TabsTrigger key={tone} value={tone} className="text-xs">
+                          {label}
+                        </TabsTrigger>
                       ))}
-                    </ul>
-                  </div>
-                </div>
-              </Panel>
-
-              <Panel icon={BookOpenCheck} title="Эмоциональный дневник КПТ">
-                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                  {analysis.cbtDiary.map(([title, detail]) => (
-                    <InfoBlock key={title} title={title} detail={detail} />
-                  ))}
-                </div>
-              </Panel>
-
-              <Panel icon={AlertTriangle} title="Паттерны в черновике">
-                <div className="grid gap-3 md:grid-cols-2">
-                  {analysis.patterns.map((pattern) => (
-                    <div
-                      key={pattern.id}
-                      className={cn(
-                        "rounded-md border p-3",
-                        pattern.hit ? "border-warning/45 bg-warning/10" : "border-border bg-background",
+                    </TabsList>
+                  </Tabs>
+                  <Textarea readOnly value={finalMessage} className="min-h-32 resize-none bg-background leading-relaxed" />
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+                      {analysis.coachState.sendReadiness.canCopy ? (
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+                      ) : (
+                        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
                       )}
+                      <span>{analysis.coachState.sendReadiness.detail}</span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant={analysis.coachState.sendReadiness.canCopy ? "default" : "outline"}
+                      onClick={copyMessage}
                     >
-                      <div className="flex items-center justify-between gap-2">
-                        <h3 className="text-sm font-semibold">{pattern.title}</h3>
-                        <Badge variant={pattern.hit ? "default" : "outline"}>
-                          {pattern.hit ? "замечено" : pattern.marker}
-                        </Badge>
-                      </div>
-                      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                        {pattern.hit ? pattern.antidote : neutralPatternText[pattern.id]}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </Panel>
-
-              <Panel icon={HeartHandshake} title="Педагогический мост">
-                <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
-                  <span className="font-medium text-foreground">{analysis.pedagogicalBridge.title}.</span>{" "}
-                  {analysis.pedagogicalBridge.principle}
-                </p>
-                <div className="grid gap-3 lg:grid-cols-3">
-                  {analysis.pedagogicalBridge.cards.map(([title, detail]) => (
-                    <InfoBlock key={title} title={title} detail={detail} />
-                  ))}
-                  {analysis.pedagogicalBridge.examples.map((example) => (
-                    <div key={example.title} className="rounded-md border border-primary/25 bg-primary/5 p-3">
-                      <h3 className="text-sm font-semibold text-primary">{example.title}</h3>
-                      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{example.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </Panel>
-
-              <Panel icon={Clipboard} title="Фраза">
-                <Tabs value={activeTone} onValueChange={(value) => setSelectedTone(value as ToneId)}>
-                  <TabsList className="mb-3 flex h-auto flex-wrap justify-start">
-                    {Object.entries(analysis.toneLabels).map(([tone, label]) => (
-                      <TabsTrigger key={tone} value={tone} className="text-xs">
-                        {label}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </Tabs>
-                <Textarea readOnly value={finalMessage} className="min-h-32 resize-none bg-background leading-relaxed" />
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
-                    {analysis.coachState.sendReadiness.canCopy ? (
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                    ) : (
-                      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
-                    )}
-                    <span>{analysis.coachState.sendReadiness.detail}</span>
+                      <Copy className="h-4 w-4" />
+                      {analysis.coachState.sendReadiness.canCopy ? copyLabel : "Пока не копировать"}
+                    </Button>
                   </div>
-                  <Button
-                    type="button"
-                    variant={analysis.coachState.sendReadiness.canCopy ? "default" : "outline"}
-                    onClick={copyMessage}
-                  >
-                    <Copy className="h-4 w-4" />
-                    {analysis.coachState.sendReadiness.canCopy ? copyLabel : "Пока не копировать"}
-                  </Button>
-                </div>
-              </Panel>
+                </AccordionPanel>
 
-              <TechniqueLibrary />
+                <AccordionPanel icon={Brain} title="Карта реакции" value="map">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {analysis.reflection.map(([title, detail]) => (
+                      <InfoBlock key={title} title={title} detail={detail} />
+                    ))}
+                  </div>
+                </AccordionPanel>
+
+                <AccordionPanel icon={Shield} title={analysis.regulationPlan.title} value="regulation">
+                  <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
+                    {analysis.regulationPlan.principle}
+                  </p>
+                  <div className="grid gap-3 lg:grid-cols-3">
+                    {analysis.regulationPlan.steps.map(([title, detail]) => (
+                      <InfoBlock key={title} title={title} detail={detail} />
+                    ))}
+                    <div className="rounded-md border border-warning/35 bg-warning/10 p-3">
+                      <h3 className="text-sm font-semibold">Не делать</h3>
+                      <ul className="mt-2 space-y-1 text-xs leading-relaxed text-muted-foreground">
+                        {analysis.regulationPlan.avoid.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </AccordionPanel>
+
+                <AccordionPanel icon={BookOpenCheck} title="Эмоциональный дневник КПТ" value="cbt">
+                  <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    {analysis.cbtDiary.map(([title, detail]) => (
+                      <InfoBlock key={title} title={title} detail={detail} />
+                    ))}
+                  </div>
+                </AccordionPanel>
+
+                <AccordionPanel icon={AlertTriangle} title="Паттерны в черновике" value="patterns">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {analysis.patterns.map((pattern) => (
+                      <div
+                        key={pattern.id}
+                        className={cn(
+                          "rounded-md border p-3",
+                          pattern.hit ? "border-warning/45 bg-warning/10" : "border-border bg-background",
+                        )}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <h3 className="text-sm font-semibold">{pattern.title}</h3>
+                          <Badge variant={pattern.hit ? "default" : "outline"}>
+                            {pattern.hit ? "замечено" : pattern.marker}
+                          </Badge>
+                        </div>
+                        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                          {pattern.hit ? pattern.antidote : neutralPatternText[pattern.id]}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionPanel>
+
+                <AccordionPanel icon={HeartHandshake} title="Педагогический мост" value="pedagogical">
+                  <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
+                    <span className="font-medium text-foreground">{analysis.pedagogicalBridge.title}.</span>{" "}
+                    {analysis.pedagogicalBridge.principle}
+                  </p>
+                  <div className="grid gap-3 lg:grid-cols-3">
+                    {analysis.pedagogicalBridge.cards.map(([title, detail]) => (
+                      <InfoBlock key={title} title={title} detail={detail} />
+                    ))}
+                    {analysis.pedagogicalBridge.examples.map((example) => (
+                      <div key={example.title} className="rounded-md border border-primary/25 bg-primary/5 p-3">
+                        <h3 className="text-sm font-semibold text-primary">{example.title}</h3>
+                        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{example.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionPanel>
+
+                <AccordionPanel icon={Lightbulb} title="Коммуникационные приемы" value="techniques">
+                  <TechniqueCards />
+                </AccordionPanel>
+              </Accordion>
             </>
           )}
         </section>
@@ -1186,48 +1301,125 @@ const LibrarySelect = ({
   </div>
 );
 
-const Panel = ({
+const AccordionPanel = ({
   icon: Icon,
   title,
+  value,
   children,
 }: {
   icon: LucideIcon;
   title: string;
+  value: string;
   children: ReactNode;
 }) => (
-  <Card>
-    <CardHeader className="pb-4">
-      <CardTitle className="flex items-center gap-2 text-base">
-        <Icon className="h-4 w-4 text-primary" />
-        {title}
-      </CardTitle>
-    </CardHeader>
-    <CardContent>{children}</CardContent>
+  <AccordionItem value={value} className="rounded-lg border border-border bg-card px-4 shadow-sm">
+    <AccordionTrigger className="gap-3 py-4 text-left text-base font-semibold hover:no-underline">
+      <span className="flex min-w-0 items-center gap-2">
+        <Icon className="h-4 w-4 shrink-0 text-primary" />
+        <span className="truncate">{title}</span>
+      </span>
+    </AccordionTrigger>
+    <AccordionContent className="pb-4 pt-0">{children}</AccordionContent>
+  </AccordionItem>
+);
+
+const FocusPanel = ({
+  analysis,
+  finalMessage,
+  copyLabel,
+  onCopy,
+}: {
+  analysis: DialogueAnalysis;
+  finalMessage: string;
+  copyLabel: string;
+  onCopy: () => void;
+}) => (
+  <Card
+    className={cn(
+      "border-l-4 bg-card/95 shadow-sm",
+      analysis.coachState.sendReadiness.canCopy ? "border-l-success" : "border-l-warning",
+    )}
+  >
+    <CardContent className="space-y-4 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Badge variant={analysis.safety ? "destructive" : "secondary"}>
+          {coachModuleLabels[analysis.coachState.module] || "Коуч"}
+        </Badge>
+        <Badge variant="outline">{analysis.coachState.sendReadiness.label}</Badge>
+      </div>
+      <div>
+        <div className="mb-1 flex items-center gap-2 text-sm font-semibold">
+          <ListChecks className="h-4 w-4 text-primary" />
+          Главный следующий шаг
+        </div>
+        <h2 className="text-lg font-semibold">{analysis.coachState.title}</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{analysis.coachState.nextStep}</p>
+      </div>
+      <p className="rounded-md bg-muted px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+        {analysis.coachState.focus}
+      </p>
+      {finalMessage.trim() && (
+        <div className="rounded-md border border-primary/20 bg-primary/5 p-3">
+          <div className="mb-2 text-xs font-semibold text-primary">Короткая рабочая фраза</div>
+          <p className="line-clamp-3 text-xs leading-relaxed text-muted-foreground">{finalMessage}</p>
+          <Button
+            type="button"
+            size="sm"
+            variant={analysis.coachState.sendReadiness.canCopy ? "default" : "outline"}
+            className="mt-3"
+            onClick={onCopy}
+          >
+            <Copy className="h-3.5 w-3.5" />
+            {analysis.coachState.sendReadiness.canCopy
+              ? copyLabel === "Скопировать"
+                ? "Скопировать фразу"
+                : copyLabel
+              : "Сначала пауза"}
+          </Button>
+        </div>
+      )}
+    </CardContent>
   </Card>
 );
 
-const TechniqueLibrary = () => (
-  <Panel icon={Lightbulb} title="Коммуникационные приемы">
-    <div className="grid gap-3 lg:grid-cols-2">
-      {communicationTechniques.map((technique) => (
-        <div key={technique.id} className="rounded-md border border-border bg-background p-3">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <h3 className="text-sm font-semibold">{technique.title}</h3>
-            <Badge variant="outline">{technique.tag}</Badge>
-          </div>
-          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{technique.principle}</p>
-          <ul className="mt-3 space-y-1 text-xs leading-relaxed text-muted-foreground">
-            {technique.steps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ul>
-          <p className="mt-3 rounded-md bg-primary/5 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
-            {technique.example}
-          </p>
+const TechniqueCards = () => (
+  <div className="grid gap-3 lg:grid-cols-2">
+    {communicationTechniques.map((technique) => (
+      <div key={technique.id} className="rounded-md border border-border bg-background p-3">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <h3 className="text-sm font-semibold">{technique.title}</h3>
+          <Badge variant="outline">{technique.tag}</Badge>
         </div>
-      ))}
-    </div>
-  </Panel>
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{technique.principle}</p>
+        <ul className="mt-3 space-y-1 text-xs leading-relaxed text-muted-foreground">
+          {technique.steps.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ul>
+        <p className="mt-3 rounded-md bg-primary/5 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+          {technique.example}
+        </p>
+      </div>
+    ))}
+  </div>
+);
+
+const TechniqueLibrary = () => (
+  <Card>
+    <Accordion type="single" collapsible>
+      <AccordionItem value="techniques" className="border-0 px-5">
+        <AccordionTrigger className="py-5 text-left hover:no-underline">
+          <span className="flex items-center gap-2 text-base font-semibold">
+            <Lightbulb className="h-4 w-4 text-primary" />
+            Коммуникационные приемы
+          </span>
+        </AccordionTrigger>
+        <AccordionContent className="pb-5 pt-0">
+          <TechniqueCards />
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  </Card>
 );
 
 const InfoBlock = ({ title, detail }: { title: string; detail: string }) => (
