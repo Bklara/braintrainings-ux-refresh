@@ -1,3 +1,33 @@
-# Welcome to your Lovable project
+# Тренажер сложного диалога
 
-TODO: Document your project here
+Локальный прототип на основе концепта Relationship Dialogue Coach. Приложение помогает разобрать сложный момент в отношениях: факт, интерпретацию, эмоции, импульс, потребность, стабилизацию при перегрузке/диссоциации, КПТ-дневник, разрушительные паттерны и варианты бережной фразы.
+
+## Запуск
+
+Откройте `index.html` в браузере или запустите локальный сервер:
+
+```bash
+npm run serve
+```
+
+После этого страница будет доступна на `http://localhost:5173`.
+
+## Проверка
+
+```bash
+npm test
+```
+
+## Состав
+
+- `index.html` — интерфейс тренажера.
+- `styles.css` — визуальная система.
+- `src/dialogueAnalyzer.js` — локальная логика анализа.
+- `src/app.js` — взаимодействие интерфейса.
+- `data/training-corpus.ru.json` — анонимизированный корпус тренировочных кейсов.
+- `data/difficult-conversations-methodology.ru.json` — 10-модульная методология тренинга и коуч-маршруты, адаптированные из пользовательского workbook.
+- `docs/behavior-architecture.md` — архитектура поведения модели.
+- `docs/system-prompt.ru.md` — системный промпт для LLM-версии.
+- `docs/training-corpus.md` — описание структуры корпуса и правил оценки.
+- `docs/difficult-conversations-methodology.ru.md` — методология тренинга сложных разговоров.
+- `docs/difficult-conversations-coach.ru.md` — протокол коуча: маршрутизация, форматы ответа и ограничения.

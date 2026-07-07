@@ -1,13 +1,170 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BrainTrainings Academy — UX audit & redesign concept</title>
-    <meta name="description" content="UX audit, information architecture and clickable redesign prototype for BrainTrainings Academy — a cognitive worksheet generator for educators, specialists and parents." />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Тренажер сложного диалога</title>
+    <link rel="stylesheet" href="styles.css?v=pedagogy-bridge" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Relationship Dialogue Coach</p>
+          <h1>Тренажер сложного диалога</h1>
+        </div>
+        <div class="topbar-actions" aria-label="Действия">
+          <button class="icon-button ghost" id="exampleButton" type="button" title="Вставить пример">
+            <i data-lucide="sparkles" aria-hidden="true"></i>
+            <span>Пример</span>
+          </button>
+          <button class="icon-button ghost" id="clearButton" type="button" title="Очистить">
+            <i data-lucide="eraser" aria-hidden="true"></i>
+            <span>Очистить</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="workspace" aria-label="Рабочая область">
+        <aside class="input-panel">
+          <div class="field-group">
+            <label for="contextType">Контекст</label>
+            <div class="segmented" id="contextType" role="tablist" aria-label="Контекст разговора">
+              <button class="segment active" type="button" data-context="partner">Партнер</button>
+              <button class="segment" type="button" data-context="family">Семья</button>
+              <button class="segment" type="button" data-context="friend">Друг</button>
+              <button class="segment" type="button" data-context="work">Работа</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="situationInput">Что произошло</label>
+            <textarea id="situationInput" rows="8" placeholder="Например: он прочитал сообщение, не ответил до вечера, а потом сказал, что я драматизирую. Мне стало тревожно и обидно."></textarea>
+          </div>
+
+          <div class="field-group">
+            <label for="draftInput">Что хочется сказать сейчас</label>
+            <textarea id="draftInput" rows="6" placeholder="Можно вставить резкий черновик. Тренажер поможет перевести его в язык фактов, чувств, границ и просьбы."></textarea>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="fearInput">Самый сильный страх</label>
+              <input id="fearInput" type="text" placeholder="меня не выберут, меня не слышат..." />
+            </div>
+            <div class="field-group">
+              <label for="wantInput">Что хочется сохранить</label>
+              <input id="wantInput" type="text" placeholder="контакт, уважение, ясность..." />
+            </div>
+          </div>
+
+          <button class="primary-action" id="analyzeButton" type="button">
+            <i data-lucide="scan-text" aria-hidden="true"></i>
+            <span>Разобрать</span>
+          </button>
+        </aside>
+
+        <section class="output-panel" aria-live="polite">
+          <section class="coach-status" id="coachStatus" hidden>
+            <div class="coach-status-main">
+              <div class="coach-title-row">
+                <i data-lucide="route" aria-hidden="true"></i>
+                <div>
+                  <p class="coach-kicker">Коуч сейчас</p>
+                  <h2 id="coachTitle">Ближайший шаг</h2>
+                </div>
+              </div>
+              <p id="coachNextStep"></p>
+            </div>
+            <div class="coach-focus">
+              <span id="coachModule"></span>
+              <p id="coachFocus"></p>
+            </div>
+          </section>
+
+          <div class="safety-banner" id="safetyBanner" hidden>
+            <i data-lucide="shield-alert" aria-hidden="true"></i>
+            <div>
+              <strong>Сначала безопасность</strong>
+              <p>Если есть угрозы, принуждение, контроль или насилие, приоритет не в мягкой формулировке, а в защите, границах и живой поддержке.</p>
+            </div>
+          </div>
+
+          <section class="analysis-grid">
+            <article class="panel pause-panel">
+              <div class="panel-heading">
+                <i data-lucide="pause-circle" aria-hidden="true"></i>
+                <h2>Пауза</h2>
+              </div>
+              <dl class="reflection-list" id="reflectionList"></dl>
+            </article>
+
+            <article class="panel ladder-panel">
+              <div class="panel-heading">
+                <i data-lucide="list-tree" aria-hidden="true"></i>
+                <h2>Глубже</h2>
+              </div>
+              <ol class="ladder" id="ladderList"></ol>
+            </article>
+          </section>
+
+          <section class="panel regulation-panel">
+            <div class="panel-heading">
+              <i data-lucide="life-buoy" aria-hidden="true"></i>
+              <h2>Стабилизация</h2>
+            </div>
+            <div class="regulation-summary" id="regulationSummary"></div>
+            <div class="regulation-grid" id="regulationPlan"></div>
+          </section>
+
+          <section class="panel cbt-panel">
+            <div class="panel-heading">
+              <i data-lucide="notebook-pen" aria-hidden="true"></i>
+              <h2>КПТ-дневник</h2>
+            </div>
+            <div class="cbt-diary" id="cbtDiary"></div>
+          </section>
+
+          <section class="panel pattern-panel">
+            <div class="panel-heading">
+              <i data-lucide="radar" aria-hidden="true"></i>
+              <h2>Паттерны в черновике</h2>
+            </div>
+            <div class="pattern-list" id="patternList"></div>
+          </section>
+
+          <section class="panel pedagogy-panel">
+            <div class="panel-heading">
+              <i data-lucide="handshake" aria-hidden="true"></i>
+              <h2>Педагогический мост</h2>
+            </div>
+            <div class="pedagogy-summary" id="pedagogySummary"></div>
+            <div class="pedagogy-grid" id="pedagogyBridge"></div>
+          </section>
+
+          <section class="formulation-surface">
+            <div class="formulation-header">
+              <div class="panel-heading">
+                <i data-lucide="messages-square" aria-hidden="true"></i>
+                <h2>Варианты фразы</h2>
+              </div>
+              <div class="tone-tabs" id="toneTabs" role="tablist" aria-label="Тон фразы"></div>
+            </div>
+            <div class="message-readiness" id="messageReadiness" hidden></div>
+            <textarea id="finalMessage" rows="7" aria-label="Выбранная формулировка"></textarea>
+            <div class="message-actions">
+              <button class="icon-button" id="copyButton" type="button" title="Скопировать">
+                <i data-lucide="copy" aria-hidden="true"></i>
+                <span>Скопировать</span>
+              </button>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="src/dialogueAnalyzer.js?v=pedagogy-bridge"></script>
+    <script src="src/app.js?v=pedagogy-bridge"></script>
   </body>
 </html>
