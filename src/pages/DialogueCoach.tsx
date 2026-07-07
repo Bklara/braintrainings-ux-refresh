@@ -9,6 +9,8 @@ import {
   Eraser,
   HeartHandshake,
   MessageSquareText,
+  FolderOpen,
+  Save,
   Shield,
   Sparkles,
   type LucideIcon,
@@ -17,6 +19,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -30,6 +39,19 @@ type FormState = {
   fear: string;
   want: string;
 };
+type QuickOption = {
+  label: string;
+  value: string;
+};
+type SavedCase = {
+  id: string;
+  title: string;
+  context: ContextId;
+  form: FormState;
+  createdAt: string;
+};
+
+const STORAGE_KEY = "braintrainings-dialogue-coach-saved-cases";
 
 const contexts: Array<{ id: ContextId; label: string }> = [
   { id: "partner", label: "Партнер" },
@@ -148,6 +170,72 @@ const examplesByContext: Record<ContextId, FormState[]> = {
   ],
 };
 
+const fearOptionsByContext: Record<ContextId, QuickOption[]> = {
+  partner: [
+    { label: "Меня не выберут", value: "меня не выберут и легко оставят" },
+    { label: "Я была не важна", value: "я была/был не важен/не важна" },
+    { label: "Меня используют", value: "меня используют, а потом исчезают" },
+    { label: "Я навязываюсь", value: "я навязываюсь и меня терпят" },
+    { label: "Связь исчезнет", value: "если я не напишу сейчас, связь исчезнет" },
+  ],
+  family: [
+    { label: "Меня не слышат", value: "меня не слышат и снова ставят в старую роль" },
+    { label: "Мои границы не важны", value: "мои границы не будут считаться настоящими" },
+    { label: "Я плохой ребенок", value: "меня увидят плохим ребенком/плохой дочерью/плохим сыном" },
+    { label: "Контакт разрушится", value: "если я поставлю границу, связь разрушится" },
+  ],
+  friend: [
+    { label: "Я не важна", value: "я не важен/не важна для этой дружбы" },
+    { label: "Я слишком чувствительная", value: "меня назовут слишком чувствительным/чувствительной" },
+    { label: "Меня заменят", value: "меня легко заменить и не заметить" },
+    { label: "Я навязываюсь", value: "я навязываюсь, а дружба важна только мне" },
+  ],
+  work: [
+    { label: "Вина останется на мне", value: "на мне останется чужая ответственность" },
+    { label: "Меня обесценят", value: "мою работу обесценят публично" },
+    { label: "Я потеряю контроль", value: "я потеряю контроль над сроками и ожиданиями" },
+    { label: "Мне нельзя ошибаться", value: "если я ошибусь, меня перестанут уважать" },
+  ],
+};
+
+const wantOptionsByContext: Record<ContextId, QuickOption[]> = {
+  partner: [
+    { label: "Ясность без давления", value: "ясность без давления и без второго сообщения из паники" },
+    { label: "Срок возвращения", value: "контакт без давления и понятный срок возвращения" },
+    { label: "Достоинство", value: "сохранить достоинство и не доказывать свою ценность" },
+    { label: "Граница после расставания", value: "понятные границы после расставания" },
+  ],
+  family: [
+    { label: "Спокойная граница", value: "спокойная граница без разрыва связи" },
+    { label: "Уважительный тон", value: "уважение, спокойный тон и право не оправдываться" },
+    { label: "Помочь сформулировать", value: "помочь другому человеку доформулировать, что с ним произошло" },
+  ],
+  friend: [
+    { label: "Теплая честность", value: "честность, тепло и понятные договоренности" },
+    { label: "Бережность", value: "бережность и возможность сказать, что это задело" },
+    { label: "Не проверять любовь", value: "сказать о боли без проверки значимости дружбы" },
+  ],
+  work: [
+    { label: "Следующий шаг", value: "рабочая ясность, срок и следующий шаг" },
+    { label: "Критерии", value: "конкретные критерии и уважительный тон" },
+    { label: "Ответственность", value: "распределить ответственность без обвинения" },
+  ],
+};
+
+const stateOptions: QuickOption[] = [
+  { label: "Меня трясет", value: "меня трясет, накрывает паника и хочется срочно писать" },
+  { label: "Как в тумане", value: "все как в тумане, я не чувствую тело и мне трудно решать сейчас" },
+  { label: "Хочу исчезнуть", value: "я хочу закрыться, исчезнуть и ничего не объяснять" },
+  { label: "Замерла система", value: "части внутри спорят, система замерла, никому внутри не нужно решать отношения сейчас" },
+];
+
+const otherReactionOptions: QuickOption[] = [
+  { label: "Закрывается", value: "другой человек закрывается, избегает разговора и не называет срок возвращения" },
+  { label: "Защищается", value: "другой человек защищается, спорит и слышит в моих словах обвинение" },
+  { label: "Обесценивает", value: "другой человек обесценивает мою боль и говорит, что я драматизирую" },
+  { label: "Давит", value: "другой человек давит на быстрый ответ, хотя мне нужна пауза" },
+];
+
 const coachModuleLabels: Record<string, string> = {
   prep_coach: "Подготовка",
   stabilization_coach: "Стабилизация",
@@ -166,9 +254,39 @@ const neutralPatternText: Record<string, string> = {
 const hasContent = (form: FormState) =>
   Object.values(form).some((value) => value.trim().length > 0);
 
+const readSavedCases = (): SavedCase[] => {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed.slice(0, 12) : [];
+  } catch {
+    return [];
+  }
+};
+
+const writeSavedCases = (cases: SavedCase[]) => {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cases));
+};
+
+const appendText = (current: string, addition: string) => {
+  if (!addition) return current;
+  if (!current.trim()) return addition;
+  if (current.includes(addition)) return current;
+  return `${current.trim()}; ${addition}`;
+};
+
+const makeSavedTitle = (context: ContextId, form: FormState) => {
+  const source = form.situation || form.draft || form.fear || "Новый разбор";
+  const firstPart = source.split(/[.!?;]/)[0].trim();
+  const contextLabel = contexts.find((item) => item.id === context)?.label || "Кейс";
+  return `${contextLabel}: ${firstPart.slice(0, 58) || "без названия"}`;
+};
+
 const DialogueCoach = () => {
   const [context, setContext] = useState<ContextId>("partner");
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [savedCases, setSavedCases] = useState<SavedCase[]>(readSavedCases);
   const [exampleIndexes, setExampleIndexes] = useState<Record<ContextId, number>>({
     partner: 0,
     family: 0,
@@ -177,6 +295,8 @@ const DialogueCoach = () => {
   });
   const [selectedTone, setSelectedTone] = useState<ToneId>("soft");
   const [copyLabel, setCopyLabel] = useState("Скопировать");
+  const [saveLabel, setSaveLabel] = useState("Сохранить");
+  const [selectVersion, setSelectVersion] = useState(0);
 
   const analysis = useMemo(() => {
     if (!hasContent(form)) return null;
@@ -188,6 +308,11 @@ const DialogueCoach = () => {
 
   const updateField = (field: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const appendField = (field: keyof FormState, value: string) => {
+    setForm((current) => ({ ...current, [field]: appendText(current[field], value) }));
+    setSelectVersion((current) => current + 1);
   };
 
   const insertExample = () => {
@@ -202,6 +327,35 @@ const DialogueCoach = () => {
     setForm(emptyForm);
     setSelectedTone("soft");
     setCopyLabel("Скопировать");
+    setSaveLabel("Сохранить");
+  };
+
+  const saveCurrentCase = () => {
+    if (!hasContent(form)) return;
+
+    const saved: SavedCase = {
+      id: `${Date.now()}`,
+      title: makeSavedTitle(context, form),
+      context,
+      form,
+      createdAt: new Date().toISOString(),
+    };
+    const nextCases = [saved, ...savedCases].slice(0, 12);
+    setSavedCases(nextCases);
+    writeSavedCases(nextCases);
+    setSaveLabel("Сохранено");
+    window.setTimeout(() => setSaveLabel("Сохранить"), 1200);
+  };
+
+  const loadSavedCase = (id: string) => {
+    const saved = savedCases.find((item) => item.id === id);
+    if (!saved) return;
+
+    setContext(saved.context);
+    setForm(saved.form);
+    setSelectedTone("soft");
+    setCopyLabel("Скопировать");
+    setSelectVersion((current) => current + 1);
   };
 
   const copyMessage = async () => {
@@ -255,6 +409,36 @@ const DialogueCoach = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="grid gap-2 sm:grid-cols-2">
+                <QuickSelect
+                  resetKey={`fear-${context}-${selectVersion}`}
+                  label="Страх"
+                  placeholder="Добавить страх"
+                  options={fearOptionsByContext[context]}
+                  onSelect={(value) => appendField("fear", value)}
+                />
+                <QuickSelect
+                  resetKey={`want-${context}-${selectVersion}`}
+                  label="Цель"
+                  placeholder="Добавить цель"
+                  options={wantOptionsByContext[context]}
+                  onSelect={(value) => appendField("want", value)}
+                />
+                <QuickSelect
+                  resetKey={`state-${context}-${selectVersion}`}
+                  label="Состояние"
+                  placeholder="Что с телом"
+                  options={stateOptions}
+                  onSelect={(value) => appendField("situation", value)}
+                />
+                <QuickSelect
+                  resetKey={`reaction-${context}-${selectVersion}`}
+                  label="Реакция другого"
+                  placeholder="Что делает другой"
+                  options={otherReactionOptions}
+                  onSelect={(value) => appendField("situation", value)}
+                />
+              </div>
               <Field
                 id="situation"
                 label="Что произошло"
@@ -292,10 +476,39 @@ const DialogueCoach = () => {
                   <Sparkles className="h-4 w-4" />
                   Пример
                 </Button>
+                <Button type="button" variant="secondary" onClick={saveCurrentCase} disabled={!hasContent(form)}>
+                  <Save className="h-4 w-4" />
+                  {saveLabel}
+                </Button>
                 <Button type="button" variant="outline" onClick={clearForm}>
                   <Eraser className="h-4 w-4" />
                   Очистить
                 </Button>
+              </div>
+              <div className="rounded-md border border-primary/20 bg-primary/5 p-3">
+                <div className="mb-2 flex items-center justify-between gap-3 text-xs font-medium text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <FolderOpen className="h-3.5 w-3.5" />
+                    Сохраненные разборы
+                  </span>
+                  <span>Сохранено: {savedCases.length}</span>
+                </div>
+                <Select
+                  key={`saved-${savedCases.length}-${selectVersion}`}
+                  disabled={!savedCases.length}
+                  onValueChange={loadSavedCase}
+                >
+                  <SelectTrigger className="bg-card">
+                    <SelectValue placeholder={savedCases.length ? "Открыть сохраненный" : "Пока ничего нет"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {savedCases.map((item) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {item.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
@@ -503,6 +716,36 @@ const Field = ({
       onChange={(event) => onChange(event.target.value)}
       className="resize-none leading-relaxed"
     />
+  </div>
+);
+
+const QuickSelect = ({
+  resetKey,
+  label,
+  placeholder,
+  options,
+  onSelect,
+}: {
+  resetKey: string;
+  label: string;
+  placeholder: string;
+  options: QuickOption[];
+  onSelect: (value: string) => void;
+}) => (
+  <div className="space-y-1.5">
+    <Label className="text-xs text-muted-foreground">{label}</Label>
+    <Select key={resetKey} onValueChange={onSelect}>
+      <SelectTrigger className="h-9 bg-card text-xs">
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   </div>
 );
 
