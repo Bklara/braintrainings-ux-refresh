@@ -218,11 +218,11 @@ const DialogueCoach = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[hsl(38_28%_97%)]">
-      <div className="border-b border-border bg-background/95 px-5 py-4 backdrop-blur">
+    <div className="min-h-screen bg-background">
+      <div className="border-b border-border bg-card/95 px-5 py-4 shadow-sm backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
               Difficult Conversations Coach
             </div>
             <h1 className="mt-1 text-2xl font-semibold text-foreground sm:text-3xl">
@@ -247,7 +247,7 @@ const DialogueCoach = () => {
 
       <div className="mx-auto grid max-w-7xl gap-5 px-5 py-5 xl:grid-cols-[420px_minmax(0,1fr)]">
         <section className="space-y-4">
-          <Card>
+          <Card className="border-primary/20 bg-card/95 shadow-sm">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-base">
                 <MessageSquareText className="h-4 w-4 text-primary" />
@@ -542,7 +542,7 @@ const PlaceholderPanel = ({
   title: string;
   text: string;
 }) => (
-  <div className="rounded-lg border border-dashed border-border bg-card p-5">
+  <div className="rounded-lg border border-dashed border-primary/25 bg-card/80 p-5">
     <Icon className="mb-3 h-5 w-5 text-primary" />
     <h2 className="text-sm font-semibold">{title}</h2>
     <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
@@ -550,7 +550,7 @@ const PlaceholderPanel = ({
 );
 
 const EmptyHint = () => (
-  <Card className="border-dashed">
+  <Card className="border-dashed border-primary/30 bg-card/80">
     <CardContent className="p-5 text-sm leading-relaxed text-muted-foreground">
       Заполните ситуацию или вставьте пример. Разбор строится локально: сначала регуляция, потом смысл,
       потребность и фраза.
