@@ -52,4 +52,29 @@ describe("DialogueCoach", () => {
     expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).toContain("Партнер");
     expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).not.toContain(removedName);
   });
+
+  it("cycles into male-perspective examples", () => {
+    render(<DialogueCoach />);
+
+    const exampleButton = screen.getByRole("button", { name: "Пример" });
+    fireEvent.click(exampleButton);
+    fireEvent.click(exampleButton);
+    fireEvent.click(exampleButton);
+
+    expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain(
+      "Партнерша сказала",
+    );
+    expect((screen.getByLabelText("Самый болезненный страх") as HTMLTextAreaElement).value).toContain(
+      "недостаточно хорошим",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Работа" }));
+    fireEvent.click(exampleButton);
+    fireEvent.click(exampleButton);
+    fireEvent.click(exampleButton);
+
+    expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain(
+      "руководитель перебил меня",
+    );
+  });
 });
