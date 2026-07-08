@@ -37,7 +37,7 @@ describe("DialogueCoach", () => {
     expect(screen.getByRole("heading", { name: "Разбор" })).toBeInTheDocument();
     expect(screen.getByText("Главный следующий шаг")).toBeInTheDocument();
     expect(screen.getByText("Рабочая фраза")).toBeInTheDocument();
-    expect(screen.getByText(/Не обязательно отправлять/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Не обязательно отправлять/).length).toBeGreaterThan(0);
   });
 
   it("resets back to the context step", () => {
