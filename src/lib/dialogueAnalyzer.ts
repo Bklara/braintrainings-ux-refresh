@@ -55,7 +55,7 @@
     }
   ];
 
-  const INTERPRETATIONS = [
+  const INTERPRETATIONS: Array<[RegExp, string]> = [
     [/не важн/i, "я не важен/не важна"],
     [/вс[её] равно/i, "ему/ей все равно"],
     [/не любит/i, "меня не любят"],

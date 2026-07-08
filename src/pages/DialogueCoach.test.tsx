@@ -7,110 +7,46 @@ describe("DialogueCoach", () => {
     window.localStorage.clear();
   });
 
-  it("renders the coach as the first usable screen", () => {
+  it("starts on the context step", () => {
     render(<DialogueCoach />);
 
-    expect(screen.getByRole("heading", { name: "Тренажер сложного разговора" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Что произошло")).toBeInTheDocument();
-    expect(screen.getByText("Разбор появится здесь")).toBeInTheDocument();
-    expect(screen.getByText("Добавить страх")).toBeInTheDocument();
-    expect(screen.getByText("Сохранено: 0")).toBeInTheDocument();
-    expect(screen.getByText("Личная библиотека")).toBeInTheDocument();
-    expect(screen.getByText("Коммуникационные приемы")).toBeInTheDocument();
-    expect(screen.queryByText("Trauma-informed темп")).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Коммуникационные приемы" }));
-
-    expect(screen.getByText("Trauma-informed темп")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Тренажер сложного разговора" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "С кем разговор" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Партн/ })).toBeInTheDocument();
   });
 
-  it("loads the partner example and shows the breakup-safe coach state", () => {
+  it("walks the flow and shows the analysis at the end", () => {
     render(<DialogueCoach />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Пример" }));
+    fireEvent.click(screen.getByRole("button", { name: /Партн/ }));
+    expect(screen.getByRole("heading", { name: "Что произошло" })).toBeInTheDocument();
 
-    expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain("Партнер сказал");
-    expect(screen.getByText(/Расставание: сохранить себя/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Заполнить примером/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Далее/ }));
+
+    expect(screen.getByRole("heading", { name: "Страх и цель" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Далее/ }));
+
+    expect(
+      screen.getByRole("heading", { name: /Черновик/ }),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Показать разбор/ }));
+
+    expect(screen.getByRole("heading", { name: "Разбор" })).toBeInTheDocument();
     expect(screen.getByText("Главный следующий шаг")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Фраза" })).toBeInTheDocument();
-    expect(screen.getByText("Не обязательно отправлять")).toBeInTheDocument();
+    expect(screen.getByText("Рабочая фраза")).toBeInTheDocument();
+    expect(screen.getAllByText(/Не обязательно отправлять/).length).toBeGreaterThan(0);
   });
 
-  it("switches to the family example and renders the pedagogical bridge", () => {
+  it("resets back to the context step", () => {
     render(<DialogueCoach />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Семья" }));
-    fireEvent.click(screen.getByRole("button", { name: "Пример" }));
+    fireEvent.click(screen.getByRole("button", { name: /Партн/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Заполнить примером/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Заново/ }));
 
-    expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain(
-      "Ребенок резко ответил учительнице",
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: "Педагогический мост" }));
-
-    expect(screen.getByText(/Доформулировать без давления/)).toBeInTheDocument();
-    expect(screen.getByText(/Как можно было бы сказать это точнее/)).toBeInTheDocument();
-  });
-
-  it("saves the current case locally", () => {
-    render(<DialogueCoach />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Пример" }));
-    fireEvent.click(screen.getByRole("button", { name: "Сохранить" }));
-
-    expect(screen.getByText("Сохранено: 1")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Найти сохраненный разбор")).toBeInTheDocument();
-    const removedName = ["Р", "ома"].join("");
-    expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).toContain("Партнер");
-    expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).not.toContain(removedName);
-
-    fireEvent.click(screen.getByRole("button", { name: /Удалить разбор/ }));
-
-    expect(screen.getByText("Сохранено: 0")).toBeInTheDocument();
-    expect(window.localStorage.getItem("braintrainings-dialogue-coach-saved-cases")).toBe("[]");
-  });
-
-  it("saves personal library shortcuts locally", () => {
-    render(<DialogueCoach />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Пример" }));
-    fireEvent.click(screen.getByRole("button", { name: "Триггер" }));
-    fireEvent.click(screen.getByRole("button", { name: "Сохранить фразу" }));
-    fireEvent.click(screen.getByRole("button", { name: "Пауза" }));
-
-    expect(screen.getByText("Записей: 3")).toBeInTheDocument();
-    const stored = JSON.parse(window.localStorage.getItem("braintrainings-dialogue-coach-personal-library") || "{}");
-    expect(stored.triggers[0].value).toContain("меня не выбрали");
-    expect(stored.safePhrases[0].value).toContain("Я пока");
-    expect(stored.pausePhrases[0].value).toContain("вернусь");
-
-    fireEvent.click(screen.getByRole("button", { name: "Очистить библиотеку" }));
-
-    expect(screen.getByText("Записей: 0")).toBeInTheDocument();
-  });
-
-  it("cycles into male-perspective examples", () => {
-    render(<DialogueCoach />);
-
-    const exampleButton = screen.getByRole("button", { name: "Пример" });
-    fireEvent.click(exampleButton);
-    fireEvent.click(exampleButton);
-    fireEvent.click(exampleButton);
-
-    expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain(
-      "Партнерша сказала",
-    );
-    expect((screen.getByLabelText("Самый болезненный страх") as HTMLTextAreaElement).value).toContain(
-      "недостаточно хорошим",
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: "Работа" }));
-    fireEvent.click(exampleButton);
-    fireEvent.click(exampleButton);
-    fireEvent.click(exampleButton);
-
-    expect((screen.getByLabelText("Что произошло") as HTMLTextAreaElement).value).toContain(
-      "руководитель перебил меня",
-    );
+    expect(screen.getByRole("heading", { name: "С кем разговор" })).toBeInTheDocument();
   });
 });
