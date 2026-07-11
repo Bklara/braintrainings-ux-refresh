@@ -49,4 +49,21 @@ describe("DialogueCoach", () => {
 
     expect(screen.getByRole("heading", { name: "С кем разговор" })).toBeInTheDocument();
   });
+
+  it("cycles through multiple examples inside the selected context", () => {
+    render(<DialogueCoach />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Партн/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Заполнить примером/ }));
+
+    expect((screen.getByPlaceholderText(/Опиши, что реально произошло/) as HTMLTextAreaElement).value).toContain(
+      "Партнёр сказал",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Заполнить примером/ }));
+
+    expect((screen.getByPlaceholderText(/Опиши, что реально произошло/) as HTMLTextAreaElement).value).toContain(
+      "прочитал сообщение утром",
+    );
+  });
 });
