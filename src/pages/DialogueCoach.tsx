@@ -300,18 +300,18 @@ const DialogueCoach = () => {
         </StepShell>
 
         {step !== "context" && (
-          <div className="mt-6 flex items-center justify-between">
-            <Button variant="ghost" size="sm" onClick={goBack}>
+          <div className="mt-6 flex items-center justify-between gap-3">
+            <Button variant="ghost" size="sm" onClick={goBack} className="shrink-0 whitespace-nowrap">
               <ArrowLeft className="h-4 w-4" />
               Назад
             </Button>
             {step !== "result" ? (
-              <Button onClick={goNext} disabled={!canProceed}>
+              <Button onClick={goNext} disabled={!canProceed} className="shrink-0 whitespace-nowrap">
                 {step === "draft" ? "Показать разбор" : "Далее"}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
-              <Button variant="outline" onClick={restart}>
+              <Button variant="outline" onClick={restart} className="shrink-0 whitespace-nowrap">
                 <RotateCcw className="h-4 w-4" />
                 Новый разбор
               </Button>
