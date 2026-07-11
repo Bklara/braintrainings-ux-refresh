@@ -174,17 +174,17 @@ const DialogueCoach = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/90 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
-          <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
+        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-5 py-4">
+          <div className="min-w-0">
+            <div className="truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
               Difficult Conversations Coach
             </div>
-            <h1 className="mt-0.5 text-lg font-semibold text-foreground">
+            <h1 className="mt-0.5 truncate text-lg font-semibold text-foreground">
               Тренажер сложного разговора
             </h1>
           </div>
           {(context || form.situation) && (
-            <Button variant="ghost" size="sm" onClick={restart} className="text-xs">
+            <Button variant="ghost" size="sm" onClick={restart} className="shrink-0 whitespace-nowrap text-xs">
               <RotateCcw className="h-3.5 w-3.5" />
               Заново
             </Button>
@@ -300,18 +300,18 @@ const DialogueCoach = () => {
         </StepShell>
 
         {step !== "context" && (
-          <div className="mt-6 flex items-center justify-between">
-            <Button variant="ghost" size="sm" onClick={goBack}>
+          <div className="mt-6 flex items-center justify-between gap-3">
+            <Button variant="ghost" size="sm" onClick={goBack} className="shrink-0 whitespace-nowrap">
               <ArrowLeft className="h-4 w-4" />
               Назад
             </Button>
             {step !== "result" ? (
-              <Button onClick={goNext} disabled={!canProceed}>
+              <Button onClick={goNext} disabled={!canProceed} className="shrink-0 whitespace-nowrap">
                 {step === "draft" ? "Показать разбор" : "Далее"}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
-              <Button variant="outline" onClick={restart}>
+              <Button variant="outline" onClick={restart} className="shrink-0 whitespace-nowrap">
                 <RotateCcw className="h-4 w-4" />
                 Новый разбор
               </Button>
