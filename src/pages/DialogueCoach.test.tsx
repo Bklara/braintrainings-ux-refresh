@@ -126,4 +126,26 @@ describe("DialogueCoach", () => {
       });
     });
   });
+
+  it("keeps English analysis modes aligned with the example intent", () => {
+    const [breakupExample, , , avoidanceExample] = dialogueCoachExamples.en.partner;
+
+    const breakupAnalysis = localizeAnalysis(
+      analyzeDialogue({ ...breakupExample, context: "partner" }),
+      "en",
+      breakupExample,
+      "partner",
+    );
+    const avoidanceAnalysis = localizeAnalysis(
+      analyzeDialogue({ ...avoidanceExample, context: "partner" }),
+      "en",
+      avoidanceExample,
+      "partner",
+    );
+
+    expect(breakupAnalysis.coachState.mode).toBe("closure");
+    expect(breakupAnalysis.coachState.title).toBe("Breakup: keep yourself intact");
+    expect(avoidanceAnalysis.pedagogicalBridge.mode).toBe("avoidance");
+    expect(avoidanceAnalysis.pedagogicalBridge.title).toBe("When the other person shuts down");
+  });
 });

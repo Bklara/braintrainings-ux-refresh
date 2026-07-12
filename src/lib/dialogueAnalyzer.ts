@@ -1,11 +1,11 @@
   const SAFETY_RE =
-    /(удар|бь[её]т|угрож|насили|принужд|(?:меня\s+)?застав(?:ляет|ляют|ил|ила|лял|ляла)|контролир|запретил|запретила|следит|слежк|шантаж|изолир|забрал(?:а)? документы|забрал(?:а)? деньги|боюсь идти домой|сексуальн|суицид|не хочу жить|убить себя|самоповреж|порезать себя)/i;
+    /(удар|бь[её]т|угрож|насили|принужд|(?:меня\s+)?застав(?:ляет|ляют|ил|ила|лял|ляла)|контролир|запретил|запретила|следит|слежк|шантаж|изолир|забрал(?:а)? документы|забрал(?:а)? деньги|боюсь идти домой|сексуальн|суицид|не хочу жить|убить себя|самоповреж|порезать себя|\bhits?\b|\bbeating\b|threat(?:en|s|ened|ening)?|violence|abuse|coerc|forced?|controlling|forbid|forbade|stalk|blackmail|isolat|took (?:my )?(?:documents|money)|afraid to go home|sexual|suicid|do not want to live|don't want to live|kill myself|self[-\s]?harm|cut myself)/i;
 
   const DISSOCIATION_RE =
-    /(диссоц|отключа|отключил|отключилась|провал|провалива|как в тумане|нереальн|дереал|деперсонал|вне тела|не чувствую тело|онемел|онемела|немею|замер|замира|меня нет|я исчез|я исчезла|теряю время|потеря времени|не помню|фл[еэ]шбек|flashback|част[ьи]|часть меня|система|переключа)/i;
+    /(диссоц|отключа|отключил|отключилась|провал|провалива|как в тумане|нереальн|дереал|деперсонал|вне тела|не чувствую тело|онемел|онемела|немею|замер|замира|меня нет|я исчез|я исчезла|теряю время|потеря времени|не помню|фл[еэ]шбек|flashback|част[ьи]|часть меня|система|переключа|dissociat|foggy|in a fog|unreal|dereal|depersonal|out of body|outside my body|cannot feel my body|can't feel my body|numb|frozen|froze|lost time|do not remember|don't remember|parts?\b|part of me|system|switch(?:ing|ed)?)/i;
 
   const OVERWHELM_RE =
-    /(накрывает|разносит|тряс[её]т|паник|не могу дышать|задыхаюсь|перегруз|не выдерж|истерик|ступор|замороз|freeze|fawn|бей беги замри|бей-беги-замри)/i;
+    /(накрывает|разносит|тряс[её]т|паник|не могу дышать|задыхаюсь|перегруз|не выдерж|истерик|ступор|замороз|freeze|fawn|бей беги замри|бей-беги-замри|flooded|overwhelm|shak(?:e|ing)|panic|cannot breathe|can't breathe|overload|cannot handle|can't handle|hysteric|stupor|fight[-\s]?flight[-\s]?freeze)/i;
 
   const EMOTIONS = [
     ["тревог", "тревога"],
@@ -21,36 +21,45 @@
     ["разочар", "разочарование"],
     ["одинок", "одиночество"],
     ["ревн", "ревность"],
-    ["беспомощ", "беспомощность"]
+    ["беспомощ", "беспомощность"],
+    ["anxious|anxiety|worried|worry", "тревога"],
+    ["angry|anger|rage|furious|resentment", "злость"],
+    ["hurt|pain|painful", "боль"],
+    ["afraid|scared|fear", "страх"],
+    ["sad|grief", "грусть"],
+    ["shame|ashamed|embarrassed", "стыд"],
+    ["guilt|guilty", "вина"],
+    ["jealous", "ревность"],
+    ["helpless|invisible|disregarded", "беспомощность"]
   ];
 
   const NEED_RULES = [
     {
-      re: /(расстал|расстались|расставан|разошл|разрыв|бывш|не готов(?:а)? (?:к отношениям|продолжать))/i,
+      re: /(расстал|расстались|расставан|разошл|разрыв|бывш|не готов(?:а)? (?:к отношениям|продолжать)|broke up|breakup|break up|ex\b|not ready (?:to continue|for (?:a )?relationship)|end(?:ed)? the relationship|relationship ended)/i,
       need: "ясность, уважение к боли и понятные границы после расставания"
     },
     {
-      re: /(не ответ|прочитал|прочитала|молч|пропал|пропала|исчез|не пишет|не звон)/i,
+      re: /(не ответ|прочитал|прочитала|молч|пропал|пропала|исчез|не пишет|не звон|did not answer|didn't answer|no answer|read my message|silent|stayed silent|disappear|ghost|not texting|not calling|pull(?:s|ed)? away)/i,
       need: "предсказуемость, подтверждение контакта и ясность"
     },
     {
-      re: /(опозд|отмени(?:л|ла|ли)|отмена|забыл|забыла|не приш[её]л|не пришла|сорвал)/i,
+      re: /(опозд|отмени(?:л|ла|ли)|отмена|забыл|забыла|не приш[её]л|не пришла|сорвал|late|cancel(?:ed|led|lation)?|forgot|did not come|didn't come|no[-\s]?show)/i,
       need: "надежность, учет договоренностей и уважение к времени"
     },
     {
-      re: /(крич|груб|тон|оскорб|униж|сарказ|насмеш)/i,
+      re: /(крич|груб|тон|оскорб|униж|сарказ|насмеш|shout|yell|rude|tone|insult|humiliat|mock|joke|sarcas)/i,
       need: "уважение, спокойный тон и эмоциональная безопасность"
     },
     {
-      re: /(соврал|соврала|лож|скрыл|скрыла|измен|предал|предала)/i,
+      re: /(соврал|соврала|лож|скрыл|скрыла|измен|предал|предала|lied|lie\b|hidden|hid\b|cheat|betray|used)/i,
       need: "честность, восстановление доверия и понятные границы"
     },
     {
-      re: /(деньг|бюджет|работ|карьер|план|ответствен)/i,
+      re: /(деньг|бюджет|работ|карьер|план|ответствен|money|budget|work|career|plan|responsib|deadline|manager|colleague|client)/i,
       need: "ясные договоренности, распределение ответственности и уважение к вкладу"
     },
     {
-      re: /(родител|реб[её]н|дет|школ|учител|педагог|воспитател)/i,
+      re: /(родител|реб[её]н|дет|школ|учител|педагог|воспитател|parent|child|children|teacher|school|sibling|brother|sister|pedagog|educat)/i,
       need: "сотрудничество, уважение ролей и фокус на благополучии ребенка"
     }
   ];
@@ -64,7 +73,16 @@
     [/предал|предала/i, "меня предали"],
     [/использ/i, "меня используют"],
     [/не слыш/i, "меня не слышат"],
-    [/не уваж/i, "меня не уважают"]
+    [/не уваж/i, "меня не уважают"],
+    [/do not matter|don't matter|not important|not chosen/i, "я не важен/не важна"],
+    [/do not care|don't care/i, "ему/ей все равно"],
+    [/not loved|does not love|doesn't love/i, "меня не любят"],
+    [/on purpose|deliberately|to hurt me/i, "это сделали специально"],
+    [/left|leave|abandon|replace|replaced/i, "меня могут оставить или не выбрать"],
+    [/betray|betrayed/i, "меня предали"],
+    [/used|using me/i, "меня используют"],
+    [/not heard|not listen/i, "меня не слышат"],
+    [/not respect|disrespect/i, "меня не уважают"]
   ];
 
   const PATTERN_DEFS = [
@@ -72,7 +90,7 @@
       id: "criticism",
       title: "Критика",
       marker: "обобщение",
-      re: /(ты\s+)?(всегда|никогда|постоянно|опять|вообще)|нормальный человек/i,
+      re: /(ты\s+)?(всегда|никогда|постоянно|опять|вообще)|нормальный человек|\b(you\s+)?(always|never|constantly|again|ever|at all)\b|normal person/i,
       antidote:
         "Сузить до одного события: когда это произошло, что именно было больно и какая просьба сейчас важна."
     },
@@ -80,7 +98,7 @@
       id: "contempt",
       title: "Презрение",
       marker: "укол",
-      re: /(коз[её]л|идиот|дурак|дура|туп|мерз|жалк|нормальный (?:бы|человек)|смешно слушать)/i,
+      re: /(коз[её]л|идиот|дурак|дура|туп|мерз|жалк|нормальный (?:бы|человек)|смешно слушать|idiot|stupid|pathetic|ridiculous|humiliat|very mature|lectures?|support desk|furniture)/i,
       antidote:
         "Убрать ярлык и оставить достоинство собеседника: мне больно, я злюсь, но не хочу унижать."
     },
@@ -88,7 +106,7 @@
       id: "defensiveness",
       title: "Защита",
       marker: "контратака",
-      re: /(а ты|сам(?:а)? виноват|это ты|из-за тебя|не я|ты сам|ты сама)/i,
+      re: /(а ты|сам(?:а)? виноват|это ты|из-за тебя|не я|ты сам|ты сама|and you|what about you|your fault|because of you|not me|you yourself)/i,
       antidote:
         "Назвать свою часть и вернуться к теме: я тоже мог(ла) сказать резче, но хочу обсудить это событие."
     },
@@ -96,7 +114,7 @@
       id: "stonewalling",
       title: "Уход",
       marker: "закрытие",
-      re: /(делай что хочешь|мне все равно|отстань|не хочу говорить|закрываю тему|больше не пиши|я молчу)/i,
+      re: /(делай что хочешь|мне все равно|отстань|не хочу говорить|закрываю тему|больше не пиши|я молчу|do whatever you want|I do not care|I don't care|leave me alone|do not want to talk|don't want to talk|topic closed|do not write|don't write|I am silent|go silent|shut down)/i,
       antidote:
         "Взять паузу с мостиком обратно: я перегружен(а), вернусь к разговору в конкретное время."
     }
@@ -765,29 +783,29 @@
   }
 
   function isBreakupNeed(need) {
-    return /расставан|расставания|разрыв|после расставания/i.test(need);
+    return /расставан|расставания|разрыв|после расставания|breakup|break up|after the breakup|relationship ended/i.test(need);
   }
 
   function wantsClosureOrPause(text) {
-    return /(не писать|не отправ|из паник|сохранить себя|не разрушать|достоинств|отпустить|заверш|границ)/i.test(
+    return /(не писать|не отправ|из паник|сохранить себя|не разрушать|достоинств|отпустить|заверш|границ|not send|not write|from panic|keep myself|protect myself|save myself|not (?:to )?destroy|destroy myself|dignity|let go|finish|closure|boundary|boundaries|after breakup)/i.test(
       text || ""
     );
   }
 
   function detectPedagogicalMode(text, context) {
-    if (/(учител|школ|реб[её]нок|дет|сын|дочь|брат|сестр|резко ответил|резко ответила)/i.test(text)) {
+    if (/(учител|школ|реб[её]нок|дет|сын|дочь|брат|сестр|резко ответил|резко ответила|teacher|school|child|children|son|daughter|sibling|brother|sister|answered sharply|talk to adults)/i.test(text)) {
       return "child_scaffold";
     }
 
     if (
-      /(не готов(?:а)? говорить|не хочу говорить|закрыва|закрылся|закрылась|молчит|молчал|молчала|пропал|пропала|исчез|не отвечает|избега|отдаля|пауза)/i.test(
+      /(не готов(?:а)? говорить|не хочу говорить|закрыва|закрылся|закрылась|молчит|молчал|молчала|пропал|пропала|исчез|не отвечает|избега|отдаля|пауза|not ready to talk|not ready to speak|do not want to talk|don't want to talk|shut down|went silent|stayed silent|goes silent|disappear|ghost|does not answer|doesn't answer|avoid|pull(?:s|ed)? away|distant|pause|come back|return to)/i.test(
         text
       )
     ) {
       return "avoidance";
     }
 
-    if (/(драматиз|сама виновата|сам виноват|обвиня|защища|спорит|обесцен|не соглас|ты тоже|а ты)/i.test(text)) {
+    if (/(драматиз|сама виновата|сам виноват|обвиня|защища|спорит|обесцен|не соглас|ты тоже|а ты|dramatiz|your fault|blame|defensive|argue|dismiss|disagree|you too|and you)/i.test(text)) {
       return "defense";
     }
 
