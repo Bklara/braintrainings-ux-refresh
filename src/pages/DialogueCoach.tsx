@@ -722,6 +722,9 @@ const pageCopy = {
     situationPlaceholder:
       "Опиши, что реально произошло. Один эпизод, без выводов о мотивах другого.",
     fillExample: "Заполнить примером",
+    demoNoticeTitle: "Сейчас это демо на примерах",
+    demoNoticeText:
+      "На текущий момент работает только корпус примеров. Можно много раз нажимать «Заполнить примером» и смотреть разные разборы, но ваш собственный запрос пока не может быть корректно обработан.",
     fearLabel: "Самый болезненный страх",
     fearHint: "Что мозг достраивает в самой худшей версии.",
     fearPlaceholder: "меня не выбрали, я не важна, меня легко оставить...",
@@ -765,6 +768,9 @@ const pageCopy = {
     situationPlaceholder:
       "Describe what actually happened. One episode, without conclusions about the other person's motives.",
     fillExample: "Fill with an example",
+    demoNoticeTitle: "This is an example-only demo right now",
+    demoNoticeText:
+      "At the moment, only the example set works. You can click “Fill with an example” many times to browse different analyses, but your own request cannot be processed correctly yet.",
     fearLabel: "Most painful fear",
     fearHint: "What your mind adds in the worst-case version.",
     fearPlaceholder: "I was not chosen, I do not matter, I can be left easily...",
@@ -1528,6 +1534,18 @@ const DialogueCoach = () => {
         <StepShell step={step} language={language}>
           {step === "context" && (
             <div className="space-y-4">
+              <div
+                role="status"
+                className="rounded-lg border border-warning/35 bg-warning/10 p-4 text-sm leading-relaxed"
+              >
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+                  <div>
+                    <div className="font-semibold text-foreground">{copy.demoNoticeTitle}</div>
+                    <p className="mt-1 text-muted-foreground">{copy.demoNoticeText}</p>
+                  </div>
+                </div>
+              </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 {activeContexts.map((item) => (
                   <button
