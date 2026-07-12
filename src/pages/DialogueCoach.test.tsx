@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { DialogueCoach } from "./DialogueCoach";
+import { analyzeDialogue } from "@/lib/dialogueAnalyzer";
+import { DialogueCoach, dialogueCoachExamples, localizeAnalysis } from "./DialogueCoach";
 
 describe("DialogueCoach", () => {
   beforeEach(() => {
@@ -65,5 +66,64 @@ describe("DialogueCoach", () => {
     expect((screen.getByPlaceholderText(/Опиши, что реально произошло/) as HTMLTextAreaElement).value).toContain(
       "прочитал сообщение утром",
     );
+  });
+
+  it("walks the English flow and shows localized analysis", () => {
+    render(<DialogueCoach />);
+
+    fireEvent.click(screen.getByRole("button", { name: "en" }));
+    expect(screen.getByRole("heading", { name: "Difficult Conversation Coach" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Partner/ }));
+    expect(screen.getByRole("heading", { name: "What happened" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Fill with an example/ }));
+    expect((screen.getByPlaceholderText(/Describe what actually happened/) as HTMLTextAreaElement).value).toContain(
+      "My partner said",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Next/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Next/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Show analysis/ }));
+
+    expect(screen.getByRole("heading", { name: "Analysis" })).toBeInTheDocument();
+    expect(screen.getByText("Main next step")).toBeInTheDocument();
+    expect(screen.getByText("Working phrase")).toBeInTheDocument();
+    expect(screen.getAllByText(/You do not have to send it/).length).toBeGreaterThan(0);
+  });
+
+  it("keeps every example analyzable and tied to its own situation", () => {
+    const cyrillic = /[А-Яа-яЁё]/;
+
+    Object.entries(dialogueCoachExamples).forEach(([language, contexts]) => {
+      Object.entries(contexts).forEach(([context, examples]) => {
+        expect(examples.length).toBeGreaterThanOrEqual(10);
+
+        examples.forEach((example) => {
+          const rawAnalysis = analyzeDialogue({ ...example, context });
+          const analysis = localizeAnalysis(
+            rawAnalysis,
+            language as "ru" | "en",
+            example,
+            context as "partner" | "family" | "friend" | "work",
+          );
+          const anchor = example.situation.split(/\s+/).slice(0, 3).join(" ");
+          const groundedText = `${analysis.reflection[0][1]} ${analysis.cbtDiary[0][1]}`;
+          const finalMessage = analysis.formulations[analysis.defaultTone];
+
+          expect(groundedText).toContain(anchor);
+          expect(finalMessage.trim().length).toBeGreaterThan(20);
+
+          if (language === "en") {
+            expect(analysis.reflection[0][0]).toBe("Fact");
+            expect(analysis.cbtDiary.some(([title]) => title === "Alternative reaction")).toBe(true);
+            expect(finalMessage).not.toMatch(cyrillic);
+          } else {
+            expect(analysis.reflection[0][0]).toBe("Факт");
+            expect(analysis.cbtDiary.some(([title]) => title === "Альтернативная реакция")).toBe(true);
+          }
+        });
+      });
+    });
   });
 });
