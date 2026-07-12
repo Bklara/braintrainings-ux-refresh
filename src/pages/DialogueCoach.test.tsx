@@ -15,6 +15,8 @@ describe("DialogueCoach", () => {
       screen.getByRole("heading", { name: "Тренажер сложного разговора" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "С кем разговор" })).toBeInTheDocument();
+    expect(screen.getByText("Сейчас это демо на примерах")).toBeInTheDocument();
+    expect(screen.getByText(/ваш собственный запрос пока не может быть корректно обработан/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Партн/ })).toBeInTheDocument();
   });
 
@@ -73,6 +75,8 @@ describe("DialogueCoach", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "en" }));
     expect(screen.getByRole("heading", { name: "Difficult Conversation Coach" })).toBeInTheDocument();
+    expect(screen.getByText("This is an example-only demo right now")).toBeInTheDocument();
+    expect(screen.getByText(/your own request cannot be processed correctly yet/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /Partner/ }));
     expect(screen.getByRole("heading", { name: "What happened" })).toBeInTheDocument();
