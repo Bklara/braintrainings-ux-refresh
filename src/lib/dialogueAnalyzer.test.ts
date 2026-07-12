@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { analyzeDialogue, detectRegulationState } from "./dialogueAnalyzer";
+import { analyzeDialogue, detectPatterns, detectRegulationState } from "./dialogueAnalyzer";
 
 const reflectionValue = (analysis: ReturnType<typeof analyzeDialogue>, title: string) => {
   const item = analysis.reflection.find(([name]) => name === title);
@@ -77,5 +77,48 @@ describe("dialogueAnalyzer", () => {
     expect(analysis.pedagogicalBridge.mode).toBe("child_scaffold");
     expect(examples).toMatch(/Учительница/);
     expect(examples).toMatch(/Как можно было бы сказать это точнее/);
+  });
+
+  it("routes English breakup examples to closure mode", () => {
+    const analysis = analyzeDialogue({
+      context: "partner",
+      situation:
+        "My partner said he was not ready to continue the relationship, and we broke up. Since then he sometimes reaches out warmly and then pulls away again.",
+      draft: "You just used me and disappeared again. If you do not care, just say it.",
+      fear: "I was not chosen and can be left easily",
+      want: "clarity, respect for my pain, and a way not to destroy myself",
+    });
+
+    expect(analysis.coachState.mode).toBe("closure");
+    expect(reflectionValue(analysis, "Потребность")).toMatch(/границы после расставания/);
+  });
+
+  it("routes English shutdown and return-time cases to the avoidance bridge", () => {
+    const analysis = analyzeDialogue({
+      context: "partner",
+      situation:
+        "After an argument, my partner shut down and said he did not want to talk right now. He did not say when he would come back to the topic.",
+      draft: "You are running away again. It is impossible to have a normal conversation with you.",
+      fear: "the pause will turn into disappearance",
+      want: "a pause with a specific time to return",
+    });
+
+    expect(analysis.pedagogicalBridge.mode).toBe("avoidance");
+  });
+
+  it("detects English draft criticism and contempt patterns", () => {
+    const patterns = detectPatterns("You always do this. Thanks for humiliating me in front of everyone.");
+
+    expect(patterns.find((pattern) => pattern.id === "criticism")?.hit).toBe(true);
+    expect(patterns.find((pattern) => pattern.id === "contempt")?.hit).toBe(true);
+  });
+
+  it("routes English dissociation and system language to stabilization first", () => {
+    const state = detectRegulationState(
+      "Everything is foggy, I feel unreal, part of me wants to write now, and the system froze.",
+      false,
+    );
+
+    expect(state.mode).toBe("dissociation");
   });
 });
